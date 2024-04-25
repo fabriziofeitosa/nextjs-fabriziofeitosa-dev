@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import AboutMe from "@/markdown/aboutMe.mdx";
-
+import AboutAuthor from "@/markdown/AboutAuthor.mdx";
 function MyProfile() {
   return (
     <>
@@ -14,7 +13,7 @@ function MyProfile() {
       <h1>
         <Link href="/">Fabrizio Feitosa</Link>
       </h1>
-      <AboutMe />
+      <AboutAuthor />
     </>
   );
 }
