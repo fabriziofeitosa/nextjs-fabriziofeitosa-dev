@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Fabrizio Feitosa - Blog",
+  name: "Fabrizio Feitosa",
   url: "https://fabriziofeitosa.dev",
   description: "Meu blog pessoal, onde compartilho conhecimento sobre desenvolvimento web e tecnologia em geral.",
   author: "Fabrizio Feitosa",

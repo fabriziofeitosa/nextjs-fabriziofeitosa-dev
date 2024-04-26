@@ -4,6 +4,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
+import { SiteHeader } from "@/components/site-header";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -28,7 +29,10 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        {children}
+        <div className="container mx-auto flex flex-col md:flex-row py-3">
+          <SiteHeader />
+          <main className="md:basis-2/3 mt-5 md:mt-0">{children}</main>
+        </div>
       </body>
     </html>
   );
