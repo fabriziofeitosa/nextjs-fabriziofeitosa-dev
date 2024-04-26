@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Icons } from "./icons";
 import { siteConfig } from "@/config/site";
 import { MainNav } from "./main-nav";
+import Link from "next/link";
 
 export function SiteHeader() {
   return (
@@ -21,14 +22,22 @@ export function SiteHeader() {
       <div className="social mt-8">
         <ul className="flex flex-row gap-2">
           <li>
-            <a href={siteConfig.links.twitter} target="_blank">
+            <Link
+              href={siteConfig.links.twitter}
+              target="_blank"
+              rel="noreferrer"
+            >
               <Icons.twitter className="w-6 h-6" />
-            </a>
+            </Link>
           </li>
           <li>
-            <a href={siteConfig.links.github} target="_blank">
+            <Link
+              href={siteConfig.links.github}
+              target="_blank"
+              rel="noreferrer"
+            >
               <Icons.gitHub className="w-6 h-6" />
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ModeToggle } from "./mode-toggle";
 
 export function MainNav() {
   const pathname = usePathname();
@@ -14,7 +15,7 @@ export function MainNav() {
   ];
 
   return (
-    <nav className="flex flex-row md:flex-col gap-4">
+    <nav className="flex flex-row md:flex-col gap-4 items-center">
       {links.map(({ href, label }) => (
         <Link
           key={href}
@@ -27,6 +28,7 @@ export function MainNav() {
           {label}
         </Link>
       ))}
+      <ModeToggle />
     </nav>
   );
 }
