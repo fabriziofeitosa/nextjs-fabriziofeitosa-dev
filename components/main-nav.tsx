@@ -15,7 +15,7 @@ export function MainNav() {
   ];
 
   return (
-    <nav className="flex flex-row md:flex-col gap-4 items-center">
+    <nav className="flex flex-row gap-4 items-center">
       {links.map(({ href, label }) => (
         <Link
           key={href}

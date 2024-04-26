@@ -33,7 +33,9 @@ export default function RootLayout({
         <Providers>
           <div className="container mx-auto flex flex-col md:flex-row py-3">
             <SiteHeader />
-            <main className="md:basis-2/3 mt-5 md:mt-0">{children}</main>
+            <main className="md:basis-2/3 lg:basis-3/4 mt-10 md:mt-0">
+              {children}
+            </main>
           </div>
         </Providers>
       </body>

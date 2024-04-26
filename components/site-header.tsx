@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function SiteHeader() {
   return (
-    <header className="md:basis-1/3">
+    <header className="md:basis-1/3 lg:basis-1/4">
       <Image
         src="/photo.png"
         alt="Fabrizio Feitosa - Blog"
