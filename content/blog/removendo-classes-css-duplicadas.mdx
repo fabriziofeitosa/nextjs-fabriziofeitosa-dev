@@ -1,0 +1,35 @@
+---
+title: Removendo classes CSS duplicadas
+description: Vamos aprender a remover classes CSS duplicadas de forma simples e rápida.
+socialImage: /media/css.jpg
+published: true
+date: 2023-03-02 00:09:09
+tags: ["css", "vscode"]
+---
+
+Ao desenvolver algo grande e trabalhando com muitos membros, é difícil ter regras tão bem definidas ao codar, especialmente o código CSS (classe CSS).
+
+Não podemos fazer com que os membros da equipe usem as mesmas classes CSS quando o projeto se torna grande demais. Acabamos nos perdendo em meio a tantas linhas.
+
+Por exemplo, vamos ter um arquivo CSS que está tendo muitas linhas de código. **A possibilidade de duplicar classes CSS criando erroneamente** ou então enquanto **mesclando o código, algumas das classes duplicadas podem estar lá** como o CSS não é uma linguagem de programação, não haverá verificação de nomes de classes que aconteceria automaticamente.
+
+Vamos imaginar um arquivo CSS com muitas linhas de código. **A possibilidade de acabar-mos duplicando classes, criando erroneamente algo que já foi definido mas com algumas dependências e até casos onde precisamos mesclar dois arquivos vai gerar classes duplicadas.**
+
+Se não os removermos, eles residirão nos arquivos CSS que são o custo dos dados que são transferidos para o site.
+
+Então é melhor fazer uma boa verificação disso.
+
+A dica que vou dar é pra quem usa o [VSCode](https://code.visualstudio.com/) já que ele tem uma extensão que vai nos ajudar muito. O nome dela é [DupChecker](https://marketplace.visualstudio.com/items?itemName=jianbingfang.dupchecker).
+
+Você pode abrir o link acima e instalar ou seguir os seguinte passos no seu VSCode:
+
+1. Vá para a guia de extensões (`Ctrl + Shift + X`).
+2. Pesquise com "**DupChecker**" e instale-o.
+3. Vá para o arquivo CSS.
+4. Aperte ( `Ctrl + Shift + P` ) e pesquise “**check duplicates with regex match**” e selecione-a.
+5. Cole este regex `^.[\w-\s.>:,[]*=]+{` e pressione Enter.
+6. Irá abrir um terminal informando as classes que estão duplicadas.
+
+**Pronto!**
+
+**Nota:** Entre os resultados pode-se mostrar classes concatenadas. Tenha cuidado ao remover.

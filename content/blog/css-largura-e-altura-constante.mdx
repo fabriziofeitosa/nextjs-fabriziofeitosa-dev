@@ -1,0 +1,53 @@
+---
+title: "CSS: Largura e Altura constante"
+description: Aprenda a criar uma caixa/div com largura e altura constante.
+socialImage: https://terminalroot.com.br/assets/img/css/css.jpg
+date: 2021-09-10 14:03:56
+published: true
+tags: ["css", "dicas", "html"]
+---
+
+Olá, como vai? Hoje vamos criar uma caixa com largura e altura constante. Vamos lá!
+
+A ideia é:
+
+1. Aplicar `padding-top` no `:before` (pseudo-element), tornando o `height` do elemento igual a uma porcentagem do seu `width`.
+2. A proporção de `height` e `width` pode ser alterada conforme necessário. Por exemplo, um `padding-top` de `100%` criará um quadrado responsivo (proporção de 1:1).
+
+## HTML
+
+```html
+<div class="box-ratio"></div>
+```
+
+## CSS
+
+```css {3,8} showLineNumbers
+.box-ratio {
+  background: #9c27b0;
+  width: 200px;
+}
+
+.box-ratio:before {
+  content: "";
+  padding-top: 100%;
+  float: left;
+}
+
+.box-ratio:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+```
+
+- Defina uma largura (`width`) para o elemento principal (`.box-ratio`).
+- Você pode editar o `padding-top` no `::before` criando novas proporções.
+
+## Exemplo de código:
+
+https://codepen.io/fabriziofeitosa/pen/mdwmdzv
+
+---
+
+Espero que eu possa ter ajudado. Até a próxima! 🚀

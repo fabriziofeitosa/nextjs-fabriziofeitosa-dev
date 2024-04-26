@@ -1,0 +1,91 @@
+---
+title: "WordPress: envio de e-mail em Localhost"
+description: Sabe quando você está criando um site WordPress no localhost e coloca um formulário projetado para enviar uma notificação por e-mail mas precisa esperar colocar online para testar? Então, vou te mostrar como enviar e-mail em localhost duma maneira simples e fácil.
+socialImage: https://mythemeshop.com/wp-content/uploads/2020/07/What-Exactly-is-Localhost.jpg
+published: true
+date: 2022-07-20 16:53:55
+tags:
+  [
+    "wordpress",
+    "dicas",
+    "php",
+    "localhost",
+    "plugin",
+    "email",
+    "desenvolvimento",
+  ]
+---
+
+**Você já precisou enviar um e-mail via localhost mas teve que esperar colocar online?**
+
+Estava eu desenvolvendo um site usando o [Flywheel Local WP](https://localwp.com/) (pode ser um [Xampp](https://www.apachefriends.org/) também) e precisei testar que após usar "Redefinir senha" fosse realizada umas certas ações. Dai eu pensei:
+
+> "Vou precisar de um servidor online pra testar esse fluxo.. Que chato né?".
+
+Pois é, fiquei triste. Mas daí resolvi dar uma rápida pesquisada se o [Flywheel Local WP](https://localwp.com/) tinha algum tipo de suporte para tratar os e-mail no localhost. Encontrei uma opção em "Tools > Mailhog" mas essa opção só mostra as coisas que o Administrador do site recebe, e somente se estiver habilitado para fazer isso, e que seria útil mas não totalmente porque eu queria a experiência do usuário. Queria saber como chegava o e-mail e essas coisas.
+
+Em meio ao Google [encontrei uma pessoa com a mesma dúvida no fórum da ](https://community.localwp.com/t/php-mail-from-local/6174)[Flywheel Local WP](https://localwp.com/)[](https://community.localwp.com/t/php-mail-from-local/6174) e nas respostas tinham algumas soluções como usar um plugin SMTP e configurar um servidor de e-mail. Foi até a resposta escolhida como a certa lá. Eu até conheço um servidor que é gratuito e funcionária, mas e se minha internet cair? Eu ia ficar no prejuízo né?
+
+Continuei lendo a discursão e encontrei um usuário chamado Martin Kaiser (@martinbkaiser no github) dizendo que:
+
+> Eu mesmo me deparei com esse problema, então decidi escrever um plugin rápido que salva e-mails como arquivos HTML no diretório raiz.
+>
+> Pode ser útil para você também.
+
+Achei genial a solução dele e resolvi testar. **Funciona perfeitamente!** Então, vamos parar de enrolar e ir logo para a solução dele, ok?
+
+1. Vai na pasta dos `plugins` que fica em `wp-content/plugins`;
+2. Cria uma pasta chamada `flywheel-local-email-testing-plugin` ou qualquer outro nome, só deixei o original do autor;
+3. Dentro tu cria um `index.php` e cola essa código aqui:
+
+```php /local-mail-test/
+<?php
+    /*
+    Plugin Name: Flywheel Local WP Email to HTML (For testing locally)
+    Plugin URI: www.itsconsultinginc.ca
+    Description: Creates a folder in the sites root Public folder called /local-mail-test/. Any emails sent from the site will be saved as HTML files in there with a timestamp.
+    Author: Martin Kaiser
+    Version: 1.0
+    Author URI: www.itsconsultinginc.ca
+    */
+
+function filter_local_mail( $args ) {
+    // Modify the options here
+    $custom_mail = array(
+        'to'          => $args['to'],
+        'subject'     => $args['subject'],
+        'message'     => $args['message'],
+        'headers'     => $args['headers'],
+        'attachments' => $args['attachments'],
+    );
+
+    if (!file_exists('local-mail-test')) {
+    	mkdir('local-mail-test', 0777, true);
+	}
+    $myfile = fopen("local-mail-test/email_".mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $custom_mail['subject'])."_".date('m-d-Y_h-i-s').".html", "w");
+    $html = '<!doctype html>';
+    $html .= '<html lang="en">';
+	    $html .= '<head>';
+	    $html .= '</head>';
+    	$html .= '<body>';
+    		$html .= '<p><b>Subject:</b> '.$custom_mail['subject'].'</p>';
+    		$html .= '<p><b>To:</b> '.$custom_mail['to'].'</p>';
+    		$html .= '<p><b>Message:</b> '.$custom_mail['message'].'</p>';
+    		$html .= '<p><b>Headers:</b> '.$custom_mail['headers'].'</p>';
+    	$html .= '</body>';
+    $html .= '</html>';
+    fwrite($myfile, $html);
+    // Return the value to the original function to send the email
+    return $custom_mail;
+}
+add_filter( 'wp_mail', 'filter_local_mail' );
+
+?>
+```
+
+4. Estamos quase terminando! Vai na pasta raiz, onde teu wordpress está instalado, e cria uma pasta chamada `local-mail-test` (deixei destacado caso você queira mudar o nome);
+5. Pronto, agora é só enviar qualquer formulário de e-mail do teu site local que será gerado um arquivo HTML dentro da pasta!
+
+Achei simples e funcional! [Clicando aqui você vai ser o repositório dele](https://github.com/martinbkaiser/flywheel-local-email-testing-plugin) no GitHub com esse plugin. O entendimento do código é bem simples, então você pode personalizar se quiser.
+
+Enfim, terminamos por hoje. Em breve eu apareço por aqui de novo para escrever alguma outra dica útil que encontrar.

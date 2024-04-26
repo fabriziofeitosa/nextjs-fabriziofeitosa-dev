@@ -1,0 +1,43 @@
+---
+title: "WordPress: Como migrar uma página Elementor para outro servidor?"
+description: Migrar páginas nunca foi tão fácil, mas com o Elementor é um pouco mais complicado. Vamos aprender a fazer isso de forma simples e rápida.
+socialImage: /media/how-to-use-elementor.webp
+date: 2023-07-18 21:42:01
+published: true
+tags: ["wordpress", "elementor", "sql", "migrar", "localhost", "produção"]
+---
+
+Sabe quando desenvolvemos uma página em localhost ou então queremos mandar de um site para outro? É bem chato fazer isso direto do Elementor, então aqui vai um jeito prático, mas avançado, de fazer isso.
+
+O Elementor mantem as informações em metas chamados "\_elementor_data" e "\_elementor_css". CSS também pode ser salvo em lugares como `/wp-conent/uploads/elementor/css/post-postID.css`.
+
+Aqui a migração simples de página do localhost (pode ser qualquer domínio) para prod (outro domínio). Isso requer habilidades no banco de dados e habilidades básicas no uso do servidor.
+
+1. Prepare seu ambiente prod (destino) com todos os recursos. Ou seja, faça o upload de todos os arquivos, imagens, estilos, scripts e/ou qualquer outra coisa no servidor destino.
+
+2. Em prod (destino) crie uma página e ative o elementor nela. Salve e feche.
+
+3. Vá até o database local (origem), procure a página que você quer migrar e copie o seu ID.
+
+4. Vá até a tabela "postmeta", e faça um filtro para mostrar somente informações com o ID que você copiou.
+
+5. Copie o conteudo de "\_elementor_data" e atualize o banco de prod (destino) com o mesmo valor.
+
+6. Caso sejam endereços diferentes você vai precisar atualizar o banco com o seguinte comando SQL:
+
+```sql /url_origem/ /url_destino/
+UPDATE wp_postmeta
+set meta_value=REPLACE( meta_value,
+	'url_origem',
+	'url_destino'
+	)
+WHERE meta_key='_elementor_data'
+```
+
+Note que no código tem `url_origem` e `url_destino` para você alterar.
+
+7. Por fim eu sugiro fazer isso com uma página específica primeiro antes desse comando que afeta de formar geral. Você pode adicionar o ID da página nesse código para deixar mais específico.
+
+---
+
+Espero que eu possa ter ajudado. Até a próxima! 🚀
