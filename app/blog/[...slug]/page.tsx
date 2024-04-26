@@ -2,6 +2,9 @@ import { posts } from "#site/content";
 import { MDXContent } from "@/components/mdx-components";
 import { notFound } from "next/navigation";
 
+// Fix mdx styles
+import "@/styles/mdx.css";
+
 interface PostPageProps {
   params: {
     slug: string[]; // Array pq a pasta tem os 3 pontos no nome
