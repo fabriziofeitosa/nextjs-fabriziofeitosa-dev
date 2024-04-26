@@ -1,11 +1,26 @@
 import { posts } from "#site/content";
 import { PostItem } from "@/components/post-item";
+import { QueryPagination } from "@/components/query-pagination";
 import { sortPosts } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
 
-export default async function BlogPage() {
+const POSTS_PER_PAGE = 4;
+
+interface BlogPageProps {
+  searchParams: {
+    page?: string;
+  };
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const currentPage = Number(searchParams?.page) || 1;
   const sortedPosts = sortPosts(posts.filter((post) => post.published));
-  const displayPosts = sortedPosts;
+  const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+
+  const displayPosts = sortedPosts.slice(
+    POSTS_PER_PAGE * (currentPage - 1),
+    POSTS_PER_PAGE * currentPage
+  );
 
   return (
     <section>
@@ -38,6 +53,7 @@ export default async function BlogPage() {
           Ops! Parece que não há postagens publicadas.
         </p>
       )}
+      <QueryPagination totalPages={totalPages} className="mt-5" />
     </section>
   );
 }
