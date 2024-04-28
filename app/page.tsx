@@ -2,14 +2,31 @@ import LatestPosts from "@/components/latest-posts";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { Typewriter } from "nextjs-simple-typewriter";
 
 export default function Home() {
   return (
     <section>
       <h2 className="inline-block font-black text-4xl">Seja bem-vindo!</h2>
       <h3 className="my-4 text-xl text-muted-foreground">
-        Posso falar um pouco sobre mim?
+        Hoje vamos falar sobre{" "}
+        <pre className="inline">
+          <Typewriter
+            words={[
+              "Programação",
+              "Javascript",
+              "React",
+              "Next.js",
+              "WordPress",
+            ]}
+            loop={0}
+            cursor={true}
+            cursorStyle="_"
+          />
+        </pre>
       </h3>
+      <hr className="my-8" />
+      <h3 className="font-black text-4xl mb-4">Deixa eu me apresentar</h3>
       <div className="space-y-3">
         <p className="text-muted-foreground">
           Com 10 anos de experiência em Tecnologia da Informação e
