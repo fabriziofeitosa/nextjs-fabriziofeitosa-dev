@@ -1,7 +1,7 @@
 import { link } from "fs";
 
 export const siteConfig = {
-  name: "Fabrizio Feitosa",
+  name: "FabrizioFeitosa.Dev",
   url: "https://fabriziofeitosa.dev",
   description: "Meu blog pessoal, onde compartilho conhecimento sobre desenvolvimento web e tecnologia em geral.",
   author: "Fabrizio Feitosa",

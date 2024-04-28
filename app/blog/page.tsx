@@ -1,8 +1,16 @@
 import { posts } from "#site/content";
 import { PostItem } from "@/components/post-item";
 import { QueryPagination } from "@/components/query-pagination";
-import { sortPosts } from "@/lib/utils";
+import { Tag } from "@/components/tag";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog - FabrizioFeitosa.Dev",
+  description: "Aqui eu posto de tudo um pouco. Fique a vontade!",
+};
 
 const POSTS_PER_PAGE = 4;
 
@@ -22,6 +30,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     POSTS_PER_PAGE * currentPage
   );
 
+  const tags = getAllTags(posts);
+  const sortedTags = sortTagsByCount(tags);
+
   return (
     <section>
       <div className="page-header space-y-4">
@@ -34,7 +45,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       {displayPosts?.length > 0 ? (
         <ul className="flex flex-col">
           {displayPosts.map((post) => {
-            const { slug, title, description, date } = post;
+            const { slug, title, description, date, tags } = post;
             return (
               <li key={slug}>
                 <PostItem
@@ -42,6 +53,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   title={title}
                   description={description}
                   date={date}
+                  tags={tags}
                 />
               </li>
             );
@@ -54,6 +66,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </p>
       )}
       <QueryPagination totalPages={totalPages} className="mt-5" />
+      <Card className="h-fit mt-8">
+        <CardHeader>
+          <CardTitle>Tags</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          {sortedTags?.map((tag) => (
+            <Tag tag={tag} key={tag} count={tags[tag]} />
+          ))}
+        </CardContent>
+      </Card>
     </section>
   );
 }

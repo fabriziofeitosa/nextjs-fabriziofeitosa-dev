@@ -19,7 +19,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
           height={75}
           className="rounded-full"
         />
-        <h1 className="my-3 text-2xl font-mono">{siteConfig.name}</h1>
+        <h1 className="my-3 text-2xl font-mono">{siteConfig.author}</h1>
         <p className="mt-3 mb-0 text-muted-foreground">
           {siteConfig.description}
         </p>
