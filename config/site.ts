@@ -1,3 +1,5 @@
+import { link } from "fs";
+
 export const siteConfig = {
   name: "Fabrizio Feitosa",
   url: "https://fabriziofeitosa.dev",
@@ -6,7 +8,8 @@ export const siteConfig = {
   links: {
     twitter: "https://twitter.com/fabriziofeitosa",
     github: "https://github.com/fabriziofeitosa",
-    personalSite: "https://fabriziofeitosa.dev",
+    instagram: "https://instagram.com/fabriziofeitosa",
+    linkedin: "https://linkedin.com/in/fabriziofeitosa",
   },
 };
 

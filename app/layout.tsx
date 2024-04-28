@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { siteConfig } from "@/config/site";
 
-import "./globals.css";
+import "./globals.scss";
 
 import { cn } from "@/lib/utils";
 import { SiteHeader } from "@/components/site-header";
 import { Providers } from "@/components/providers";
+import { SiteFooter } from "@/components/site-footer";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,7 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" className="scroll-pt-[3.5rem]">
+    <html
+      lang="pt-br"
+      className="scroll-pt-[3.5rem]"
+      // suppressHydrationWarning={true}
+    >
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -40,11 +45,12 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <div className="container mx-auto flex flex-col md:flex-row py-3">
-            <SiteHeader />
-            <main className="md:basis-2/3 lg:basis-3/4 mt-10 md:mt-0">
+          <div className="content-area container grid mx-auto pt-10 gap-x-10">
+            <SiteHeader className={"content-area-header"} />
+            <main className="mt-10 md:mt-0 content-area-content">
               {children}
             </main>
+            <SiteFooter className="content-area-footer" />
           </div>
         </Providers>
       </body>

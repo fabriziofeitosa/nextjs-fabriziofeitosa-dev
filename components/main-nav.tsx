@@ -10,7 +10,6 @@ export function MainNav() {
 
   const links = [
     { href: "/", label: "Início" },
-    { href: "/sobre", label: "Sobre" },
     { href: "/blog", label: "Blog" },
   ];
 

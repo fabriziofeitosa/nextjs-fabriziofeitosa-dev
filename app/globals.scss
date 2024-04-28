@@ -79,3 +79,29 @@
 body {
   margin: 0 0 0 calc(100vw - 100%);
 }
+
+.content-area {
+  max-width: 1040px;
+  grid-template:
+    "header"
+    "content"
+    "footer" / 1fr;
+
+  @media (screen(md)) {
+    grid-template:
+      "header content content"
+      "footer footer footer" / 1fr 2fr 1fr;
+  }
+
+  &-header {
+    grid-area: header;
+  }
+
+  &-content {
+    grid-area: content;
+  }
+
+  &-footer {
+    grid-area: footer;
+  }
+}
