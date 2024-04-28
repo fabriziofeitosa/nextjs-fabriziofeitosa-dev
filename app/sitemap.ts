@@ -40,6 +40,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date()
     },
     ...sitemapPost,
-    // ...sitemapPostTags
+    ...sitemapPostTags
   ]
 }
