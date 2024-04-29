@@ -41,7 +41,7 @@ export default defineConfig({
   mdx: {
     rehypePlugins: [
       rehypeSlug,
-      [rehypePrettyCode, { theme: "andromeeda" }],
+      [rehypePrettyCode, { theme: "dracula" }],
       [
         rehypeAutolinkHeadings,
         {

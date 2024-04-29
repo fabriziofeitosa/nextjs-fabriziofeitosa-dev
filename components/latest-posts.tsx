@@ -1,6 +1,6 @@
 import { posts } from "#site/content";
 import { PostItem } from "@/components/post-item";
-import { sortPosts } from "@/lib/utils";
+import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
 
 interface LatestPostsProps {
@@ -13,12 +13,15 @@ export default async function LatestPosts({ qtdPosts = 4 }: LatestPostsProps) {
   // Limitando postagens por página
   const displayPosts = sortedPosts.slice(0, qtdPosts);
 
+  const tags = getAllTags(posts);
+  const sortedTags = sortTagsByCount(tags);
+
   return (
     <section>
       {displayPosts?.length > 0 ? (
         <ul className="flex flex-col">
           {displayPosts.map((post) => {
-            const { slug, title, description, date } = post;
+            const { slug, title, description, date, tags } = post;
             return (
               <li key={slug}>
                 <PostItem
@@ -26,6 +29,7 @@ export default async function LatestPosts({ qtdPosts = 4 }: LatestPostsProps) {
                   title={title}
                   description={description}
                   date={date}
+                  tags={tags}
                 />
               </li>
             );

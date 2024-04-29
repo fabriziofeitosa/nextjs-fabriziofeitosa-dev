@@ -1,5 +1,3 @@
-import { link } from "fs";
-
 export const siteConfig = {
   name: "FabrizioFeitosa.Dev",
   url: "https://fabriziofeitosa.dev",

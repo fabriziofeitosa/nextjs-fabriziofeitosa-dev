@@ -11,7 +11,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="inline-block border border-muted-foreground mt-8 p-4 rounded"
+        className="inline-block border border-muted-foreground mt-8 p-4 rounded w-full"
       >
         Voltar para a página inicial
       </Link>

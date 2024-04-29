@@ -16,14 +16,17 @@ export default function Error({
 
   return (
     <div>
-      <h2>Ops! Alguma coisa deu errado.</h2>
+      <h2 className="inline-block font-black text-4xl">
+        Ops! Alguma coisa deu errado.
+      </h2>
       <button
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => reset()
         }
+        className="inline-block border border-muted-foreground mt-8 p-4 rounded w-full"
       >
-        Try again
+        Tentar novamente.
       </button>
     </div>
   );

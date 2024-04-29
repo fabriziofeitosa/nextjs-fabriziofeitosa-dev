@@ -45,7 +45,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <div className="content-area container grid mx-auto pt-10 gap-x-10">
+          <div className="content-area container grid pt-10 gap-x-10">
             <SiteHeader className={"content-area-header"} />
             <main className="mt-10 md:mt-0 content-area-content">
               {children}

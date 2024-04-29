@@ -76,10 +76,6 @@
   }
 }
 
-body {
-  margin: 0 0 0 calc(100vw - 100%);
-}
-
 .content-area {
   max-width: 1040px;
   grid-template:
@@ -99,6 +95,7 @@ body {
 
   &-content {
     grid-area: content;
+    max-width: calc(100vw - 5rem);
   }
 
   &-footer {

@@ -1,11 +1,14 @@
 import { posts } from "#site/content";
 import { MDXContent } from "@/components/mdx-components";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { siteConfig } from "@/config/site";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // Fix mdx styles
 import "@/styles/mdx.css";
-import { Metadata } from "next";
-import { siteConfig } from "@/config/site";
 
 interface PostPageProps {
   params: {
@@ -78,8 +81,19 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   return (
-    <article className="py-6 prose dark:prose-invert">
-      <h1 className="mb-2 text-2xl font-bold">{post.title}</h1>
+    <article className="py-6 prose dark:prose-invert w-90 md:w-full">
+      <Link
+        href="/blog"
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          "mb-8 decoration-transparent"
+        )}
+      >
+        Voltar
+      </Link>
+      <h1 className="mb-2 text-2xl font-bold" id="title">
+        {post.title}
+      </h1>
       {post.description ? (
         <p className="text-xl mt-0 text-muted-foreground">{post.description}</p>
       ) : null}
