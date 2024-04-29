@@ -81,7 +81,8 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   return (
-    <article className="py-6 prose dark:prose-invert w-90 md:w-full">
+    <article className="pb-6 prose dark:prose-invert">
+      <hr className="mt-4 md:hidden border-foreground" />
       <Link
         href="/blog"
         className={cn(
