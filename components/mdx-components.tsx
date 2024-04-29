@@ -14,6 +14,10 @@ const useMDXComponent = (code: string) => {
   return fn({ ...runtime }).default;
 };
 
+interface componentsProps {
+  className: string;
+}
+
 const components = {
   Alert,
   AlertTitle,
@@ -21,7 +25,7 @@ const components = {
   IconInfo,
   Image,
   Callout,
-  a: ({ className, ...props }) => (
+  a: ({ className, ...props }: componentsProps) => (
     <a
       target="_blank"
       rel="noopener noreferrer"
