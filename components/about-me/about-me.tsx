@@ -15,25 +15,31 @@ export default function AboutMe() {
       <h3 className="font-black text-3xl mb-4">Deixa eu me apresentar</h3>
       <div className="space-y-3">
         <p className="text-muted-foreground">
-          Com 10 anos de experiência em Tecnologia da Informação e
-          desenvolvimento web, trilhei um caminho desde o desenvolvimento
-          inicial de websites até a criação de soluções para a alta gestão
-          empresarial. Atualmente, concentro-me em projetos diversos, incluindo
-          pesquisa e planejamento front-end para novos produtos e serviços,
-          assim como o design de interfaces web alinhadas com as tendências de
-          mercado e inovação.
+          Desde 2009, quando comecei a estudar programação aos 15 anos, trilhei
+          um caminho contínuo de aprendizado e desenvolvimento na área de
+          Tecnologia da Informação e desenvolvimento web. Aos 18 anos, em 2012,
+          foquei meus estudos no front-end, ampliando minha expertise e paixão
+          por criar soluções inovadoras e funcionais.
+        </p>
+        <p className="text-muted-foreground">
+          Minha trajetória abrange desde o desenvolvimento inicial de websites
+          até a criação de soluções para a alta gestão empresarial. Atualmente,
+          concentro-me em projetos variados, incluindo pesquisa e planejamento
+          front-end para novos produtos e serviços, além do design de interfaces
+          web que estão sempre alinhadas com as tendências de mercado e a
+          inovação.
         </p>
         <p className="text-muted-foreground">
           Sou graduado em Sistemas de Informação pela UniJuazeiro (FJN -
-          Faculdade de Juazeiro do Norte), já fiz diversos cursos sobre front-end
-          e nunca paro de estudar. Provavelmente nesse momento estarei estudando
-          algo novo.
+          Faculdade de Juazeiro do Norte) e continuamente busco aprimorar minhas
+          habilidades com diversos cursos na área de front-end. Provavelmente,
+          enquanto lê este texto, estarei estudando algo novo.
         </p>
         <p className="text-muted-foreground">
-          Sou uma pessoa sociável, organizada, espontânea, curiosa e
-          transparente. Encaro novos desafios sem temor, pois vejo neles
-          oportunidades de crescimento profissional, sempre disposto a adquirir
-          novas habilidades. Sou flexível em relação a novas ideias e valorizo a
+          Me considero uma pessoa sociável, organizada, espontânea, curiosa e
+          transparente. Encaro novos desafios com entusiasmo, vendo neles
+          oportunidades para crescimento profissional e aquisição de novas
+          habilidades. Sou flexível em relação a novas ideias e valorizo a
           colaboração na tomada de decisões.
         </p>
       </div>

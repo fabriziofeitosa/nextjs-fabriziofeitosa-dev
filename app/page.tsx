@@ -13,7 +13,7 @@ export default function Home() {
       </h2>
       <h3 className="my-4 text-xl text-muted-foreground">
         Hoje vamos falar sobre{" "}
-        <pre className="inline">
+        <pre className="block lg:inline">
           <Typewriter
             words={[
               "Programação",
