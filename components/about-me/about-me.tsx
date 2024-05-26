@@ -25,8 +25,9 @@ export default function AboutMe() {
         </p>
         <p className="text-muted-foreground">
           Sou graduado em Sistemas de Informação pela UniJuazeiro (FJN -
-          Faculdade de Juazeiro do Norte) e participei de cursos específicos em
-          desenvolvimento front-end.
+          Faculdade de Juazeiro do Norte), já fiz diversos cursos sobre front-end
+          e nunca paro de estudar. Provavelmente nesse momento estarei estudando
+          algo novo.
         </p>
         <p className="text-muted-foreground">
           Sou uma pessoa sociável, organizada, espontânea, curiosa e
