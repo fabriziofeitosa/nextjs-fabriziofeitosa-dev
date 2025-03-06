@@ -34,6 +34,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date()
     },
     {
+      url: `${siteConfig.url}/apps`,
+      priority: 1.0,
+      changeFrequency: 'daily',
+      lastModified: new Date()
+    },
+    {
+      url: `${siteConfig.url}/apps/password-generator`,
+      priority: 1.0,
+      changeFrequency: 'daily',
+      lastModified: new Date()
+    },
+    {
       url: `${siteConfig.url}/tags`,
       priority: 1.0,
       changeFrequency: 'daily',
