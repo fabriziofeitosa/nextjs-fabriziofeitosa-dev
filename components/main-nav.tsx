@@ -11,6 +11,7 @@ export function MainNav() {
   const links = [
     { href: "/", label: "Início" },
     { href: "/blog", label: "Blog" },
+    { href: "/apps", label: "Aplicativos" },
   ];
 
   return (
