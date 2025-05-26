@@ -6,7 +6,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Copy, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -98,6 +97,13 @@ export default function PasswordGenerator() {
     return "bg-emerald-500"
   }
 
+  const getCharacterColor = (char: string) => {
+    if (/\d/.test(char)) return "text-blue-500"
+    if (/[^A-Za-z0-9]/.test(char)) return "text-red-500"
+    if (/[A-Z]/.test(char)) return "text-gray-600 dark:text-gray-400"
+    return ""
+  }
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -116,7 +122,18 @@ export default function PasswordGenerator() {
               </Button>
             </div>
           </div>
-          <Input id="password" value={password} readOnly className="font-mono text-base" />
+          <div
+            className="flex items-center w-full rounded-md border border-input bg-background px-3 py-2 text-base font-mono ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            tabIndex={0}
+            role="textbox"
+            aria-readonly="true"
+          >
+            {password.split('').map((char, index) => (
+              <span key={index} className={getCharacterColor(char)}>
+                {char}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-2">
