@@ -1,41 +1,53 @@
 ---
 title: "WordPress: Como migrar uma página Elementor para outro servidor?"
-description: Migrar páginas nunca foi tão fácil, mas com o Elementor é um pouco mais complicado. Vamos aprender a fazer isso de forma simples e rápida.
+description: "Migrar páginas nunca foi tão fácil, mas com o Elementor é um pouco mais complicado. Vamos aprender a fazer isso de forma simples e rápida."
 date: 2023-07-18 21:42:01
 published: true
 tags: ["wordpress", "elementor", "sql", "migrar", "localhost", "produção"]
 ---
 
-Sabe quando desenvolvemos uma página em localhost ou então queremos mandar de um site para outro? É bem chato fazer isso direto do Elementor, então aqui vai um jeito prático, mas avançado, de fazer isso.
+Sabe quando desenvolvemos uma página em localhost ou então queremos enviar de um site para outro? É bem chato fazer isso direto pelo Elementor, então aqui vai um jeito prático, mas avançado, de fazer isso.
 
-O Elementor mantem as informações em metas chamados "\_elementor_data" e "\_elementor_css". CSS também pode ser salvo em lugares como `/wp-conent/uploads/elementor/css/post-postID.css`.
+O Elementor mantém as informações em metadados chamados `_elementor_data` e `_elementor_css`. O CSS também pode ser salvo em lugares como `/wp-content/uploads/elementor/css/post-postID.css`.
 
-Aqui a migração simples de página do localhost (pode ser qualquer domínio) para prod (outro domínio). Isso requer habilidades no banco de dados e habilidades básicas no uso do servidor.
+Aqui está a migração simples de página do localhost (pode ser qualquer domínio) para produção (outro domínio). Isso requer habilidades no banco de dados e habilidades básicas no uso do servidor.
 
-1. Prepare seu ambiente prod (destino) com todos os recursos. Ou seja, faça o upload de todos os arquivos, imagens, estilos, scripts e/ou qualquer outra coisa no servidor destino.
+## Passo a passo da migração
 
-2. Em prod (destino) crie uma página e ative o elementor nela. Salve e feche.
+### 1. Prepare seu ambiente de produção (destino)
+Faça o upload de todos os arquivos, imagens, estilos, scripts e/ou qualquer outra coisa no servidor destino.
 
-3. Vá até o database local (origem), procure a página que você quer migrar e copie o seu ID.
+### 2. Crie uma página no servidor de destino
+Em produção (destino), crie uma página e ative o Elementor nela. Salve e feche.
 
-4. Vá até a tabela "postmeta", e faça um filtro para mostrar somente informações com o ID que você copiou.
+### 3. Identifique a página de origem
+Vá até o banco de dados local (origem), procure a página que você quer migrar e copie o seu ID.
 
-5. Copie o conteudo de "\_elementor_data" e atualize o banco de prod (destino) com o mesmo valor.
+### 4. Acesse a tabela postmeta
+Vá até a tabela "postmeta" e faça um filtro para mostrar somente informações com o ID que você copiou.
 
-6. Caso sejam endereços diferentes você vai precisar atualizar o banco com o seguinte comando SQL:
+### 5. Copie o conteúdo do _elementor_data
+Copie o conteúdo de `_elementor_data` e atualize o banco de produção (destino) com o mesmo valor.
 
-```sql /url_origem/ /url_destino/
+### 6. Atualize os URLs (se necessário)
+Caso sejam endereços diferentes, você vai precisar atualizar o banco com o seguinte comando SQL:
+
+```sql
 UPDATE wp_postmeta
-set meta_value=REPLACE( meta_value,
-	'url_origem',
-	'url_destino'
-	)
-WHERE meta_key='_elementor_data'
+SET meta_value = REPLACE(meta_value, 'url_origem', 'url_destino')
+WHERE meta_key = '_elementor_data'
 ```
 
-Note que no código tem `url_origem` e `url_destino` para você alterar.
+Note que no código você deve substituir `url_origem` e `url_destino` pelos URLs corretos.
 
-7. Por fim eu sugiro fazer isso com uma página específica primeiro antes desse comando que afeta de formar geral. Você pode adicionar o ID da página nesse código para deixar mais específico.
+### 7. Teste com uma página específica primeiro
+Por fim, eu sugiro fazer isso com uma página específica primeiro antes de usar o comando que afeta de forma geral. Você pode adicionar o ID da página nesse código para deixar mais específico:
+
+```sql
+UPDATE wp_postmeta
+SET meta_value = REPLACE(meta_value, 'url_origem', 'url_destino')
+WHERE meta_key = '_elementor_data' AND post_id = SEU_ID_AQUI
+```
 
 ---
 

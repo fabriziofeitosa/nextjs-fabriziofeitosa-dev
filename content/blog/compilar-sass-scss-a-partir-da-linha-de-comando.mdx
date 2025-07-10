@@ -1,6 +1,6 @@
 ---
-title: Compilar SASS / SCSS a partir da linha de comando
-description: Compile de forma simples, e em qualquer diretório, SASS e/ou SCSS para CSS usando NodeJS de forma global.
+title: "Compilar SASS / SCSS a partir da linha de comando"
+description: "Compile de forma simples, e em qualquer diretório, SASS e/ou SCSS para CSS usando NodeJS de forma global."
 date: 2021-09-02 18:02:00
 published: true
 tags: ["sass", "node", "nodejs", "css", "npm", "scss"]
@@ -9,13 +9,13 @@ tags: ["sass", "node", "nodejs", "css", "npm", "scss"]
 ## Instalação (Install Globally Using NPM)
 
 1. Tenha o [NodeJS](https://nodejs.org/pt-br/download/) & [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) instalado.
-2. Rode o comando para instalar o SASS globalmente:
+2. Execute o comando para instalar o SASS globalmente:
 
 ```cmd
 npm install -g sass
 ```
 
-> Nota: O comando anterior pode precisar ser prefixado com, `sudo` dependendo de suas permissões de usuário no caso de um LINUX.
+> **Nota:** O comando anterior pode precisar ser prefixado com `sudo` dependendo de suas permissões de usuário no caso de um LINUX.
 
 ## One-to-One Mode
 
@@ -41,9 +41,9 @@ ou **pasta para pasta**:
 sass assets/scss:assets/css
 ```
 
-## _SASS to CSS_ na prática!
+## SASS to CSS na prática!
 
-Recomendo ter uma boa organização, onde o SASS fique dentro de uma pasta separada do CSS, mas caso vá usar como `componentes` deixa os dois um do lado do outro e use o método **One-to-one** que falei acima.
+Recomendo ter uma boa organização, onde o SASS fique dentro de uma pasta separada do CSS, mas caso vá usar como `componentes`, deixe os dois um do lado do outro e use o método **One-to-one** que falei acima.
 
 Vamos imaginar o seguinte:
 
@@ -51,7 +51,7 @@ Vamos imaginar o seguinte:
 - Dentro dela crie uma pasta chamada `sass` e coloque seus arquivos;
 - Agora volte na pasta `css` e vamos usar o _prompt de comando_ nela;
 
-> Dependendo do seu sistema operacional, é só clicar com mouse direito na pasta que deve aparece a opção. No Windows, segura o `Shift` + `clique com o direito`.
+> Dependendo do seu sistema operacional, é só clicar com mouse direito na pasta que deve aparecer a opção. No Windows, segure o `Shift` + `clique com o direito`.
 
 Aqui está um exemplo de caminho no prompt:
 
@@ -60,28 +60,28 @@ Aqui está um exemplo de caminho no prompt:
 Então você pode executar esse comando:
 
 ```cmd
- sass -w --no-source-map sass:
+sass -w --no-source-map sass:
 ```
 
-**MAS O QUE FOI ISSO?** Calma, vou explicar e até tentar desenhar pra você.
+**MAS O QUE FOI ISSO?** Calma, vou explicar e até tentar desenhar para você.
 
 ```cmd
- sass -w --no-source-map sass:
+sass -w --no-source-map sass:
 |----|--|---------------|------|
 __1___2________3__________4____
 ```
 
-(acho que dá pra entender meu desenho aí acima)
+(acho que dá para entender meu desenho aí acima)
 
-1 - O `sass` é pra iniciar a atividade que queremos (lógico né?).
+1 - O `sass` é para iniciar a atividade que queremos (lógico né?).
 
-2 - O `-w` pra ele ficar _"observado"_ sempre que você der um `Ctrl + S` no arquivo SASS e já converter para o CSS. Se quiser parar o comando, dá um `Ctrl + C`.
+2 - O `-w` para ele ficar _"observando"_ sempre que você der um `Ctrl + S` no arquivo SASS e já converter para o CSS. Se quiser parar o comando, dê um `Ctrl + C`.
 
-3 - `--no-source-map` é pra evitar de criar um _map_. Você pode remover enquanto está desenvolvendo para ajudar a depurar, mas quando for para produção, é bom deixar.
+3 - `--no-source-map` é para evitar de criar um _map_. Você pode remover enquanto está desenvolvendo para ajudar a depurar, mas quando for para produção, é bom deixar.
 
 4 - Por fim, esse comando é `origem:destino`. Do jeito que está ele vai acessar a pasta `sass` e salvar o `.css` na pasta onde está rodando o comando, pois o segundo valor está vazio. Se tiver um valor nesse segundo, ele vai querer entrar na pasta de mesmo nome e salvar o CSS dentro.
 
-**Ficou com dúvidas ainda?!** Vou passar aqui uns links úteis pra você:
+**Ficou com dúvidas ainda?!** Vou passar aqui uns links úteis para você:
 
 - [Documentação compilador SASS](https://sass-lang.com/documentation/cli/dart-sass)
 - [Fonte desse tutorial](https://blog.jamesauble.com/compile-sass-scss-from-the-command-line-d17dfe96f0fa)

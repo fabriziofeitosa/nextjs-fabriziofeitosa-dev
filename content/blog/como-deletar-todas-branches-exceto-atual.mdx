@@ -1,16 +1,16 @@
 ---
 title: "Como excluir todas as branches locais, exceto a atual?"
-description: "Seria bom fazer uma limpa em tantas branches/ramificações baixadas no seu repositório local, certo? Vamos aprender a fazer isso."
+description: "Seria bom fazer uma limpeza em tantas branches/ramificações baixadas no seu repositório local, certo? Vamos aprender a fazer isso."
 date: 2024-12-04 14:30:00
 published: true
 tags: ["git", "dicas", "organização"]
 ---
 
-Se você fizer um `git branch` no seu repositório local poderá ver várias branches que está trabalhando ou que já trabalhou. Depois de um tempo você irá acumular muitas delas que nem usa mais, então vamos aprender a fazer uma limpa.
+Se você executar `git branch` no seu repositório local, poderá ver várias branches em que está trabalhando ou que já trabalhou. Depois de um tempo, você irá acumular muitas delas que nem usa mais, então vamos aprender a fazer uma limpeza.
 
 ## O comando "mágico"
 
-Sem enrolação, abra o Git Bash (o terminal do Git). Se sua branche principal for de nome `master` e não quiser preservar nenhuma outra, você já pode executar o seguinte comando:
+Sem enrolação, abra o Git Bash (o terminal do Git). Se sua branch principal for de nome `master` e você não quiser preservar nenhuma outra, já pode executar o seguinte comando:
 
 <Alert>
   <IconInfo className="h-4 w-4" />
@@ -26,9 +26,9 @@ Sem enrolação, abra o Git Bash (o terminal do Git). Se sua branche principal f
 $ git branch | grep -v "master" | xargs git branch -D
 ```
 
-Se sua **branch principal e/ou de trabalho** tiver outro nome, altera de `master` para outro nome que você utilize.
+Se sua **branch principal e/ou de trabalho** tiver outro nome, altere `master` para outro nome que você utilize.
 
-**Pronto! Isso já irá fazer uma limpa no seu repositório local.** Caso queira entender melhor o comando ou mais algumas dicas de uso, vamos nos aprofundar mais.
+**Pronto! Isso já fará uma limpeza no seu repositório local.** Caso queira entender melhor o comando ou mais algumas dicas de uso, vamos nos aprofundar mais.
 
 ---
 
@@ -58,7 +58,7 @@ O `|` é o operador pipe, que direciona a saída do comando anterior (`git branc
 
 O comando `grep -v "master"` filtra as linhas excluindo aquelas que contêm a palavra "master".
 
-Por exemplo, se a saída de git branch fosse:
+Por exemplo, se a saída de `git branch` fosse:
 
 ```bash
   feature1

@@ -1,6 +1,6 @@
 ---
-title: Virtual Host usando XAMPP no Windows
-description: Se você quer aprender a criar virtual host com xampp, essa matéria é pra você!
+title: "Virtual Host usando XAMPP no Windows"
+description: "Se você quer aprender a criar virtual host com XAMPP, essa matéria é para você!"
 date: 2022-03-20 17:51:38
 published: true
 tags: ["xampp", "windows", "desenvolvimento"]
@@ -12,7 +12,7 @@ Vamos aprender a não usar mais um "localhost" e sim um domínio local mais sofi
 http://localhost/nomesite
 ```
 
-Você pode utilizar ao mais próximo da realidade como:
+Você pode utilizar algo mais próximo da realidade como:
 
 ```
 http://local.projeto.com
@@ -22,23 +22,23 @@ Você pode criar qualquer nome, domínio ou subdomínio de acordo com seu gosto.
 
 Basicamente, vamos configurar o Windows para quando acessar o domínio e apontar para nossa máquina (`localhost`) no Apache para uma pasta específica.
 
-## 1. Editar arquivo `host`
+## 1. Editar arquivo `hosts`
 
-Aperto o botão Windows e procure pelo "_Bloco de Notas_". **Aperte com o mouse direito sobre ele e execute como administrador.**
+Aperte o botão Windows e procure pelo "_Bloco de Notas_". **Aperte com o mouse direito sobre ele e execute como administrador.**
 
 ![Clicando com mouse direito no aplicativo "bloco de notas"](virtual-host-bloco-de-notas-administrador-1.webp)
 
-Depois basta ir em **Arquivo > Abrir**, ir no arquivo host (basta copiar o endereço `C:\Windows\System32\drivers\etc\hosts`) depois clicar em abrir.
+Depois basta ir em **Arquivo > Abrir**, ir no arquivo hosts (basta copiar o endereço `C:\Windows\System32\drivers\etc\hosts`) depois clicar em abrir.
 
-Nesse arquivo, você encontrará o ip para sua máquina (`127.0.0.1`) com nome na frente “`localhost`”. Quando você digitar "`localhost`" no seu navegador, ele está apontando para sua máquina, então o Apache (Servidor Web) vai apontar para sua pasta.
+Nesse arquivo, você encontrará o IP para sua máquina (`127.0.0.1`) com nome na frente "`localhost`". Quando você digitar "`localhost`" no seu navegador, ele está apontando para sua máquina, então o Apache (Servidor Web) vai apontar para sua pasta.
 
-Como estamos usando o XAMPP com a premissa de estar instalado no`C://`, ele irá apontar para: `C:\xampp\htdocs`.
+Como estamos usando o XAMPP com a premissa de estar instalado no `C://`, ele irá apontar para: `C:\xampp\htdocs`.
 
-O seu arquivo host será como esse abaixo:
+O seu arquivo hosts será como esse abaixo:
 
 ![Arquivo HOST aberto no bloco de notas](virtual-host-bloco-de-notas-host-600x318.webp)
 
-Agora adicione o domínio que você deseja. No exemplo, vou criar um chamado _“local.projeto.com”_, ficando assim:
+Agora adicione o domínio que você deseja. No exemplo, vou criar um chamado "_local.projeto.com_", ficando assim:
 
 ```
 127.0.0.1       local.projeto.com
@@ -60,15 +60,16 @@ C:\xampp\apache\conf\extra\httpd-vhosts.conf
 
 Nesse arquivo serão configurados os **Virtual Hosts**. Ele já vem com configurações de exemplo, porém em comentário.
 
-Aqui ele. Vamos usá-lo como base:
+Aqui está. Vamos usá-lo como base:
 
 ```cmd
-<VirtualHost \*:80>
-  ServerAdmin webmaster@dummy-host.example.com DocumentRoot
-  "C:/xampp/htdocs/dummy-host.example.com" ServerName dummy-host.example.com
-  ServerAlias www.dummy-host.example.com ErrorLog
-  "logs/dummy-host.example.com-error.log" CustomLog
-  "logs/dummy-host.example.com-access.log" common
+<VirtualHost *:80>
+  ServerAdmin webmaster@dummy-host.example.com
+  DocumentRoot "C:/xampp/htdocs/dummy-host.example.com"
+  ServerName dummy-host.example.com
+  ServerAlias www.dummy-host.example.com
+  ErrorLog "logs/dummy-host.example.com-error.log"
+  CustomLog "logs/dummy-host.example.com-access.log" common
 </VirtualHost>
 ```
 
@@ -92,19 +93,19 @@ Ou seja, é uma pasta chamada "_projeto_".
 
 Vamos configurar o **virtual host**:
 
-```cmd /local.projeto.com/
+```cmd
 <VirtualHost *:80>
     ServerAdmin webmaster@local.projeto.com
     DocumentRoot "C:/xampp/htdocs/projeto"
     ServerName local.projeto.com
     ErrorLog "logs/local.projeto.com-error.log"
-    CustomLog "logs/local.projeto.com--access.log" common
+    CustomLog "logs/local.projeto.com-access.log" common
 </VirtualHost>
 ```
 
 O único que não utilizamos é o _ServerAlias_, pois não teremos nomes alternativos para o ambiente local.
 
-Se você já estiver iniciado o XAMPP, basta parar (Stop) e iniciar (Start) o Apache, caso contrário, basta só iniciar (Start) o Apache e depois acessa via URL o endereço que foi configurado.
+Se você já estiver iniciado o XAMPP, basta parar (Stop) e iniciar (Start) o Apache, caso contrário, basta só iniciar (Start) o Apache e depois acessar via URL o endereço que foi configurado.
 
 ## 3. Testando
 

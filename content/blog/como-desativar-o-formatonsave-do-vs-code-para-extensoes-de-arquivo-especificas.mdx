@@ -1,0 +1,141 @@
+---
+title: "Como desativar o 'formatOnSave' do VS Code para extensões de arquivo específicas"
+description: "Aprenda como desabilitar o formatOnSave do VS Code apenas para tipos de arquivo específicos, mantendo a formatação automática para outros arquivos."
+date: 2025-07-10 13:00:00
+published: true
+tags: ["vscode", "dicas", "configuração", "desenvolvimento"]
+---
+
+Quem nunca se irritou com o `formatOnSave` do VS Code formatando arquivos que você não queria que fossem formatados? Às vezes você tem arquivos específicos que precisam manter sua formatação original, mas o VS Code insiste em reformatá-los automaticamente.
+
+Neste artigo, vou mostrar como desabilitar o `formatOnSave` apenas para extensões de arquivo específicas, mantendo a funcionalidade para todos os outros arquivos. Esta é uma solução muito mais elegante do que desabilitar completamente a formatação automática.
+
+## Como funciona
+
+O VS Code permite configurar regras específicas para diferentes tipos de arquivo através das configurações do editor. Podemos usar duas propriedades principais:
+
+- `files.associations`: Define associações de extensões de arquivo com linguagens específicas
+- `[language]`: Define configurações específicas para uma linguagem de programação
+
+## Passo 1 — Abrir as Configurações
+
+Existem duas maneiras de acessar as configurações:
+
+**Opção 1 - Interface Gráfica:**
+- No Windows/Linux: Pressione `Ctrl + ,`
+- No Mac: Pressione `Cmd + ,`
+
+**Opção 2 - Comando:**
+- Pressione `Ctrl + Shift + P` (ou `Cmd + Shift + P` no Mac)
+- Digite "Preferences: Open Settings (JSON)"
+- Selecione a opção para abrir o arquivo `settings.json`
+
+## Passo 2 — Configurar as Associações de Arquivo
+
+Primeiro, você precisa associar a extensão do arquivo com uma linguagem específica. Adicione o seguinte ao seu `settings.json`:
+
+```json
+{
+    "files.associations": {
+        "*.plush.html": "plush",
+        "*.template": "html",
+        "*.config": "json"
+    }
+}
+```
+
+> **Dica:** Se você estiver trabalhando com linguagens populares que já são reconhecidas pelo VS Code, pode pular o bloco `files.associations` e usar diretamente o nome da linguagem no próximo passo.
+
+## Passo 3 — Desabilitar formatOnSave para Linguagens Específicas
+
+Agora, adicione as configurações para desabilitar o `formatOnSave` apenas para as linguagens que você não quer que sejam formatadas automaticamente:
+
+```json
+{
+    "files.associations": {
+        "*.plush.html": "plush",
+        "*.template": "html"
+    },
+    "[plush]": {
+        "editor.formatOnSave": false
+    },
+    "[html]": {
+        "editor.formatOnSave": false
+    },
+    "[javascript]": {
+        "editor.formatOnSave": false
+    },
+    "[json]": {
+        "editor.formatOnSave": false
+    }
+}
+```
+
+## Exemplos Práticos
+
+### Para arquivos HTML específicos
+```json
+{
+    "files.associations": {
+        "*.template.html": "html-template"
+    },
+    "[html-template]": {
+        "editor.formatOnSave": false
+    }
+}
+```
+
+### Para arquivos de configuração
+```json
+{
+    "files.associations": {
+        "*.config.js": "javascript-config"
+    },
+    "[javascript-config]": {
+        "editor.formatOnSave": false
+    }
+}
+```
+
+### Para arquivos de template
+```json
+{
+    "files.associations": {
+        "*.tpl": "template"
+    },
+    "[template]": {
+        "editor.formatOnSave": false
+    }
+}
+```
+
+## Verificando se Funcionou
+
+Para verificar se a configuração está funcionando:
+
+1. Abra um arquivo com a extensão que você configurou
+2. Faça alguma alteração no código
+3. Salve o arquivo (`Ctrl + S` ou `Cmd + S`)
+4. O arquivo não deve ser formatado automaticamente
+
+## Configurações Adicionais Úteis
+
+Você também pode configurar outras opções para arquivos específicos:
+
+```json
+{
+    "[javascript]": {
+        "editor.formatOnSave": false,
+        "editor.formatOnPaste": false,
+        "editor.formatOnType": false
+    }
+}
+```
+
+## Conclusão
+
+Esta solução permite que você mantenha o `formatOnSave` ativo para a maioria dos seus arquivos, mas desabilite apenas para tipos específicos que precisam manter sua formatação original. É uma abordagem muito mais flexível e produtiva do que desabilitar completamente a formatação automática.
+
+---
+
+**Créditos:** Este artigo foi baseado no post original "[How to Disable VS Code formatOnSave for Specific File Extensions](https://medium.com/@zulhhandyplast/how-to-disable-vs-code-formatonsave-for-specific-file-extensions-c60e8f254243)" por Zulh Handy Plast, traduzido e adaptado para português brasileiro.

@@ -1,16 +1,16 @@
 ---
-title: Converter tags de imagem com arquivos SVG em tags SVG inline
+title: "Converter tags de imagem com arquivos SVG em tags SVG inline"
 description: "Vamos aprender a converter tags de imagem com arquivos SVG em tags SVG inline para personalizar via CSS."
 date: 2022-09-16 22:33:48
 published: true
 tags: ["svg", "javascript", "dicas", "css"]
 ---
 
-Se você sente a necessidade de transformar um SVG que está sendo usado via tag de imagem em um SVG inline, para personalizar ele a teu gosto via CSS, vou te ensinar um método muito prático para realizar isso.
+Se você sente a necessidade de transformar um SVG que está sendo usado via tag de imagem em um SVG inline, para personalizá-lo a seu gosto via CSS, vou te ensinar um método muito prático para realizar isso.
 
 ## Como eu cheguei nessa necessidade
 
-Tinha uma página que funcionava como template, então o que mudava além do conteúdo era a cor de alguns textos, bordas, background e também ícones SVGs que vinham em tags de imagem. Como eu precisava fazer com que os ícone acompanhassem o tema, o modo como eles eram chamados não me permitia fazer isso.
+Tinha uma página que funcionava como template, então o que mudava além do conteúdo era a cor de alguns textos, bordas, background e também ícones SVGs que vinham em tags de imagem. Como eu precisava fazer com que os ícones acompanhassem o tema, o modo como eles eram chamados não me permitia fazer isso.
 
 Exemplo:
 
@@ -18,7 +18,7 @@ Exemplo:
 <img src="assets/images/calendario.svg" class="card-icon" id="calendario" />
 ```
 
-Daí em meio as minhas pesquisas eu encontrei o seguinte código JS que realiza o que preciso:
+Daí em meio às minhas pesquisas eu encontrei o seguinte código JS que realiza o que preciso:
 
 ```js {5} showLineNumbers
 const convertImages = (query, callback) => {
@@ -46,9 +46,9 @@ const convertImages = (query, callback) => {
 
 O autor explica:
 
-> É uma função bastante simples que recebe uma consulta e um retorno de chamada como argumentos. Tudo o que você precisa fazer é chamar essa função com uma consulta pelas imagens que deseja converter e ela percorrerá cada uma delas Buscará o SVG e usará o DOMParser para extrair os dados SVG do arquivo. Depois disso ele copia os atributos `id` e `class` da imagem para a variável SVG e substitui a imagem pelos dados SVG.
+> É uma função bastante simples que recebe uma consulta e um retorno de chamada como argumentos. Tudo o que você precisa fazer é chamar essa função com uma consulta pelas imagens que deseja converter e ela percorrerá cada uma delas. Buscará o SVG e usará o DOMParser para extrair os dados SVG do arquivo. Depois disso ele copia os atributos `id` e `class` da imagem para a variável SVG e substitui a imagem pelos dados SVG.
 
-Simples de entender, né? Além disso da para copiar mais propriedade se quiser, basta editar o código a seu gosto.
+Simples de entender, né? Além disso, dá para copiar mais propriedades se quiser, basta editar o código a seu gosto.
 
 ## Uma sugestão minha
 
@@ -94,7 +94,7 @@ Pronto! Você só verá o SVG quando o JS for executado.
 
 ## Uma última coisa
 
-Eu li comentários de pessoas que usaram esse código e relataram erro de CORS. Isso vai depende da fonte de onde vem a imagem. Eu puxei de uma API, então não enfrentei esse problema. Se alguém passar por isso e tiver uma solução é só me falar que eu atualizo aqui.
+Eu li comentários de pessoas que usaram esse código e relataram erro de CORS. Isso vai depender da fonte de onde vem a imagem. Eu puxei de uma API, então não enfrentei esse problema. Se alguém passar por isso e tiver uma solução é só me falar que eu atualizo aqui.
 
 ---
 
