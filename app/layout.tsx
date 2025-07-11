@@ -1,13 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { siteConfig } from "@/config/site";
-
 import "./globals.scss";
-
-import { cn } from "@/lib/utils";
-import { SiteHeader } from "@/components/site-header";
+import { Analytics } from '@vercel/analytics/next';
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { cn } from "@/lib/utils";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -34,9 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="pt-br"
+      lang="pt-BR"
       className="scroll-pt-[3.5rem]"
-      // suppressHydrationWarning={true}
+    // suppressHydrationWarning={true}
     >
       <body
         className={cn(
@@ -53,6 +52,7 @@ export default function RootLayout({
             <SiteFooter className="content-area-footer" />
           </div>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
