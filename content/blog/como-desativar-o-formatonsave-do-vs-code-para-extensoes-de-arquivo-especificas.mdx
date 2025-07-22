@@ -22,10 +22,12 @@ O VS Code permite configurar regras específicas para diferentes tipos de arquiv
 Existem duas maneiras de acessar as configurações:
 
 **Opção 1 - Interface Gráfica:**
+
 - No Windows/Linux: Pressione `Ctrl + ,`
 - No Mac: Pressione `Cmd + ,`
 
 **Opção 2 - Comando:**
+
 - Pressione `Ctrl + Shift + P` (ou `Cmd + Shift + P` no Mac)
 - Digite "Preferences: Open Settings (JSON)"
 - Selecione a opção para abrir o arquivo `settings.json`
@@ -36,11 +38,11 @@ Primeiro, você precisa associar a extensão do arquivo com uma linguagem espec�
 
 ```json
 {
-    "files.associations": {
-        "*.plush.html": "plush",
-        "*.template": "html",
-        "*.config": "json"
-    }
+  "files.associations": {
+    "*.plush.html": "plush",
+    "*.template": "html",
+    "*.config": "json"
+  }
 }
 ```
 
@@ -52,60 +54,63 @@ Agora, adicione as configurações para desabilitar o `formatOnSave` apenas para
 
 ```json
 {
-    "files.associations": {
-        "*.plush.html": "plush",
-        "*.template": "html"
-    },
-    "[plush]": {
-        "editor.formatOnSave": false
-    },
-    "[html]": {
-        "editor.formatOnSave": false
-    },
-    "[javascript]": {
-        "editor.formatOnSave": false
-    },
-    "[json]": {
-        "editor.formatOnSave": false
-    }
+  "files.associations": {
+    "*.plush.html": "plush",
+    "*.template": "html"
+  },
+  "[plush]": {
+    "editor.formatOnSave": false
+  },
+  "[html]": {
+    "editor.formatOnSave": false
+  },
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[json]": {
+    "editor.formatOnSave": false
+  }
 }
 ```
 
 ## Exemplos Práticos
 
 ### Para arquivos HTML específicos
+
 ```json
 {
-    "files.associations": {
-        "*.template.html": "html-template"
-    },
-    "[html-template]": {
-        "editor.formatOnSave": false
-    }
+  "files.associations": {
+    "*.template.html": "html-template"
+  },
+  "[html-template]": {
+    "editor.formatOnSave": false
+  }
 }
 ```
 
 ### Para arquivos de configuração
+
 ```json
 {
-    "files.associations": {
-        "*.config.js": "javascript-config"
-    },
-    "[javascript-config]": {
-        "editor.formatOnSave": false
-    }
+  "files.associations": {
+    "*.config.js": "javascript-config"
+  },
+  "[javascript-config]": {
+    "editor.formatOnSave": false
+  }
 }
 ```
 
 ### Para arquivos de template
+
 ```json
 {
-    "files.associations": {
-        "*.tpl": "template"
-    },
-    "[template]": {
-        "editor.formatOnSave": false
-    }
+  "files.associations": {
+    "*.tpl": "template"
+  },
+  "[template]": {
+    "editor.formatOnSave": false
+  }
 }
 ```
 
@@ -124,11 +129,11 @@ Você também pode configurar outras opções para arquivos específicos:
 
 ```json
 {
-    "[javascript]": {
-        "editor.formatOnSave": false,
-        "editor.formatOnPaste": false,
-        "editor.formatOnType": false
-    }
+  "[javascript]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false
+  }
 }
 ```
 
@@ -138,4 +143,4 @@ Esta solução permite que você mantenha o `formatOnSave` ativo para a maioria 
 
 ---
 
-**Créditos:** Este artigo foi baseado no post original "[How to Disable VS Code formatOnSave for Specific File Extensions](https://medium.com/@zulhhandyplast/how-to-disable-vs-code-formatonsave-for-specific-file-extensions-c60e8f254243)" por Zulh Handy Plast, traduzido e adaptado para português brasileiro.
+**Créditos:** Este artigo foi baseado no post original "[How to Disable VS Code formatOnSave for Specific File Extensions](https://medium.com/@zulhhandyplast/how-to-disable-vs-code-formatonsave-for-specific-file-extensions-c60e8f254243)" por Zulh Handy Plast, traduzido e adaptado para.
