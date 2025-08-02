@@ -1,0 +1,357 @@
+---
+title: "Usando Git Stash e Git Stash Pop: Um guia completo para gerenciar trabalho em progresso"
+description: "Descubra como usar git stash e git stash pop para salvar e recuperar trabalho em progresso, permitindo trocar de branches sem perder suas modificações."
+date: 2025-08-02
+published: true
+tags: ["git", "stash", "versionamento", "desenvolvimento", "branches"]
+---
+
+O Git revolucionou o controle de versão, mas frequentemente enfrentamos situações onde precisamos interromper nosso trabalho atual para resolver problemas urgentes em outras branches. É aqui que o **Git Stash** entra em cena, oferecendo uma solução elegante e poderosa para salvar trabalho em progresso.
+
+## O problema do trabalho em progresso
+
+Em desenvolvimento de software, é comum estarmos trabalhando em uma feature quando surge a necessidade de resolver um bug crítico em outra branch. Fazer commits incompletos não é uma boa prática, e perder o trabalho feito também não é uma opção.
+
+```bash
+# Situação comum: trabalho em progresso
+$ git status
+On branch feature/nova-funcionalidade
+Changes not staged for commit:
+  modified:   src/components/UserProfile.tsx
+  modified:   src/utils/validation.ts
+  new file:   src/components/NewFeature.tsx
+```
+
+## O que é Git Stash?
+
+**Git Stash** é um comando que permite salvar temporariamente suas modificações não commitadas em uma "pilha" local, retornando seu diretório de trabalho para um estado limpo. É uma ferramenta essencial para qualquer desenvolvedor que precise alternar entre branches sem perder trabalho em progresso.
+
+## Como funciona o Stash
+
+### 1. Conceito de Pilha (Stack)
+
+O stash funciona como uma pilha LIFO (Last In, First Out), onde:
+- Cada stash recebe um índice: `stash@{0}`, `stash@{1}`, etc.
+- O stash mais recente sempre é o `stash@{0}`
+- Novos stashes empurram os antigos para baixo na pilha
+
+```bash
+# Criando um stash
+$ git stash
+Saved working directory and index state WIP on feature/nova-funcionalidade: abc1234 commit message
+
+# Verificando stashes existentes
+$ git stash list
+stash@{0}: WIP on feature/nova-funcionalidade: abc1234 commit message
+stash@{1}: WIP on main: def5678 outro commit
+```
+
+### 2. Estados do Stash
+
+```bash
+# Estado antes do stash
+$ git status
+On branch feature/nova-funcionalidade
+Changes not staged for commit:
+  modified:   src/components/UserProfile.tsx
+  new file:   src/components/NewFeature.tsx
+
+# Após git stash
+$ git status
+On branch feature/nova-funcionalidade
+nothing to commit, working tree clean
+```
+
+## Comandos Principais
+
+### Git Stash (Salvar)
+
+```bash
+# Stash básico
+$ git stash
+
+# Stash com mensagem personalizada
+$ git stash push -m "WIP: implementando validação de formulário"
+
+# Stash incluindo arquivos não rastreados
+$ git stash -u
+
+# Stash apenas arquivos específicos
+$ git stash push src/components/UserProfile.tsx
+```
+
+### Git Stash Pop (Recuperar)
+
+```bash
+# Aplica o stash mais recente e o remove da pilha
+$ git stash pop
+
+# Aplica um stash específico
+$ git stash pop stash@{1}
+
+# Aplica sem remover da pilha
+$ git stash apply stash@{0}
+```
+
+### Git Stash List (Listar)
+
+```bash
+# Lista todos os stashes
+$ git stash list
+stash@{0}: WIP on feature/nova-funcionalidade: abc1234 commit message
+stash@{1}: WIP on main: def5678 outro commit
+stash@{2}: WIP on hotfix: ghi9012 correção urgente
+```
+
+## Casos de Uso Comuns
+
+### 1. Interrupção para Hotfix
+
+```bash
+# Trabalhando em uma feature
+$ git status
+On branch feature/nova-funcionalidade
+Changes not staged for commit:
+  modified:   src/components/UserProfile.tsx
+
+# Salvando trabalho
+$ git stash push -m "WIP: melhorias no perfil do usuário"
+
+# Mudando para branch de hotfix
+$ git checkout main
+$ git checkout -b hotfix/correcao-critica
+
+# Resolvendo o problema
+$ # ... fazer correções ...
+
+# Commitando hotfix
+$ git add .
+$ git commit -m "fix: corrige problema crítico de segurança"
+$ git checkout main
+$ git merge hotfix/correcao-critica
+
+# Voltando ao trabalho original
+$ git checkout feature/nova-funcionalidade
+$ git stash pop
+```
+
+### 2. Experimentando Diferentes Abordagens
+
+```bash
+# Primeira tentativa
+$ git stash push -m "tentativa 1: usando useState"
+
+# Segunda tentativa
+$ git stash push -m "tentativa 2: usando useReducer"
+
+# Terceira tentativa
+$ git stash push -m "tentativa 3: usando Context API"
+
+# Comparando abordagens
+$ git stash show -p stash@{0}  # Ver primeira tentativa
+$ git stash show -p stash@{1}  # Ver segunda tentativa
+$ git stash show -p stash@{2}  # Ver terceira tentativa
+
+# Aplicando a melhor abordagem
+$ git stash pop stash@{1}  # Aplicar segunda tentativa
+```
+
+### 3. Salvando Arquivos Novos
+
+```bash
+# Arquivos novos não entram no stash por padrão
+$ git status
+On branch feature/nova-funcionalidade
+Changes not staged for commit:
+  modified:   src/components/UserProfile.tsx
+  new file:   src/components/NewFeature.tsx
+
+# Adicionando arquivo novo ao staging
+$ git add src/components/NewFeature.tsx
+
+# Agora o stash incluirá o arquivo novo
+$ git stash push -m "incluindo novo componente"
+```
+
+## Comandos Avançados
+
+### Git Stash Show (Visualizar)
+
+```bash
+# Mostra resumo do stash mais recente
+$ git stash show
+ src/components/UserProfile.tsx | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+# Mostra diferenças detalhadas
+$ git stash show -p
+
+# Mostra stash específico
+$ git stash show -p stash@{1}
+```
+
+### Git Stash Drop (Remover)
+
+```bash
+# Remove o stash mais recente
+$ git stash drop
+
+# Remove stash específico
+$ git stash drop stash@{1}
+
+# Remove todos os stashes
+$ git stash clear
+```
+
+### Git Stash Branch (Criar Branch)
+
+```bash
+# Cria nova branch a partir do stash
+$ git stash branch nova-branch stash@{0}
+
+# Equivale a:
+$ git checkout -b nova-branch
+$ git stash pop stash@{0}
+```
+
+## Boas Práticas
+
+### 1. Use Mensagens Descritivas
+
+```bash
+# ❌ Evite
+$ git stash
+
+# ✅ Prefira
+$ git stash push -m "WIP: implementando autenticação OAuth"
+$ git stash push -m "WIP: correção de bug no formulário de login"
+$ git stash push -m "WIP: refatoração do componente de paginação"
+```
+
+### 2. Limpe Stashes Antigos
+
+```bash
+# Regularmente, limpe stashes antigos
+$ git stash list
+stash@{0}: WIP on feature/nova-funcionalidade: abc1234 commit message
+stash@{1}: WIP on main: def5678 outro commit
+stash@{2}: WIP on hotfix: ghi9012 correção urgente
+
+# Remova stashes que não são mais necessários
+$ git stash drop stash@{2}
+```
+
+### 3. Combine com Outros Comandos
+
+```bash
+# Stash apenas arquivos específicos
+$ git stash push src/components/ src/utils/
+
+# Stash ignorando arquivos específicos
+$ git stash push --keep-index
+
+# Stash incluindo arquivos não rastreados
+$ git stash push -u
+```
+
+## Resolução de Problemas
+
+### Conflitos no Stash Pop
+
+```bash
+# Se houver conflitos ao aplicar stash
+$ git stash pop
+Auto-merging src/components/UserProfile.tsx
+CONFLICT (content): Merge conflict in src/components/UserProfile.tsx
+
+# Resolva conflitos e continue
+$ # ... resolver conflitos ...
+$ git add src/components/UserProfile.tsx
+$ git commit -m "resolve conflitos do stash"
+```
+
+### Stash Perdido
+
+```bash
+# Recuperar stash perdido (se ainda estiver no reflog)
+$ git fsck --no-reflog | grep commit | cut -d' ' -f3 | xargs git log --merges --no-walk
+
+# Ou use o reflog
+$ git reflog
+# Procure por entradas relacionadas ao stash
+```
+
+## Integração com Workflows
+
+### Git Flow
+
+```bash
+# Trabalhando em feature
+$ git checkout -b feature/nova-funcionalidade
+# ... trabalho em progresso ...
+
+# Interrupção para hotfix
+$ git stash push -m "WIP: feature em progresso"
+$ git checkout develop
+$ git checkout -b hotfix/correcao-urgente
+# ... resolver problema ...
+$ git checkout develop
+$ git merge hotfix/correcao-urgente
+$ git checkout feature/nova-funcionalidade
+$ git stash pop
+```
+
+### GitHub Flow
+
+```bash
+# Trabalhando em branch
+$ git checkout -b feature/nova-funcionalidade
+# ... trabalho em progresso ...
+
+# Pull request atualizado
+$ git stash push -m "WIP: antes de atualizar branch"
+$ git checkout main
+$ git pull origin main
+$ git checkout feature/nova-funcionalidade
+$ git rebase main
+$ git stash pop
+```
+
+## Performance e Considerações
+
+### Tamanho do Stash
+
+- Stashes são armazenados localmente
+- Não afetam o repositório remoto
+- Podem crescer se não forem limpos regularmente
+
+### Segurança
+
+```bash
+# Stashes são locais - não são enviados para repositório remoto
+$ git push origin main
+# Stashes permanecem apenas no seu computador
+
+# Para compartilhar stashes (não recomendado)
+$ git stash push -m "compartilhável"
+$ git stash show -p stash@{0} > meu-stash.patch
+# Envie o arquivo .patch para outro desenvolvedor
+```
+
+## Conclusão
+
+O Git Stash é uma ferramenta essencial para desenvolvedores que precisam gerenciar trabalho em progresso de forma eficiente. Ele oferece:
+
+- **Flexibilidade**: Salva trabalho sem commits desnecessários
+- **Segurança**: Preserva modificações durante trocas de branch
+- **Organização**: Permite experimentar diferentes abordagens
+- **Produtividade**: Evita perda de trabalho em progresso
+- **Simplicidade**: Comandos intuitivos e fáceis de usar
+
+Ao incorporar Git Stash em seu workflow de desenvolvimento, você elimina a ansiedade de perder trabalho em progresso e melhora significativamente sua produtividade ao alternar entre diferentes contextos de desenvolvimento.
+
+<Callout type="info">
+**Dica**: Use mensagens descritivas nos seus stashes e limpe regularmente stashes antigos para manter sua pilha organizada. O stash é uma ferramenta poderosa, mas pode se tornar confuso se não for bem gerenciado.
+</Callout>
+
+Espero que este guia tenha ajudado você a dominar o Git Stash e melhorar seu fluxo de trabalho. Até a próxima! 🚀 
