@@ -1,0 +1,252 @@
+---
+title: "Zustand + React Query: O Duo Perfeito para Gerenciamento de Estado em React"
+description: "Descubra como combinar Zustand e React Query para criar uma arquitetura de estado eficiente, leve e fácil de manter em suas aplicações React."
+date: 2025-08-11
+published: true
+tags: ["react", "zustand", "react-query", "typescript", "desenvolvimento", "frontend"]
+---
+
+O gerenciamento de estado em aplicações React sempre foi um desafio constante para desenvolvedores. Com o passar dos anos, vimos o surgimento de várias soluções: Redux com sua arquitetura robusta, Context API nativa do React, MobX com sua reatividade automática, e muitas outras. Mas recentemente, uma combinação específica tem chamado atenção pela simplicidade e eficiência: **Zustand** + **React Query**.
+
+Esta dupla oferece uma abordagem moderna e pragmática para lidar com os dois tipos principais de estado em aplicações web: **estado do cliente** (Zustand) e **estado do servidor** (React Query).
+
+## Por que Zustand?
+
+Zustand é uma biblioteca de gerenciamento de estado que prioriza a simplicidade sem sacrificar a funcionalidade. Diferente de outras soluções, ele não impõe uma arquitetura específica - você define suas próprias regras.
+
+### Características principais:
+
+* **Bundle size mínimo** — Apenas ~2KB gzipped
+* **Zero configuração** — Funciona imediatamente após a instalação
+* **API intuitiva** — Baseada em hooks nativos do React
+* **TypeScript nativo** — Inferência de tipos automática
+
+### Exemplo básico:
+
+```typescript
+import { create } from "zustand";
+
+interface CounterStore {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCounterStore = create<CounterStore>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+}));
+
+// Uso no componente
+function Counter() {
+  const { count, increment, decrement } = useCounterStore();
+  
+  return (
+    <div>
+      <h2>Contador: {count}</h2>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </div>
+  );
+}
+```
+
+## Separação de Responsabilidades
+
+A chave para uma arquitetura de estado eficiente é entender que **estado do cliente** e **estado do servidor** são fundamentalmente diferentes:
+
+### Estado do Cliente (Zustand)
+- Preferências do usuário
+- Estado da interface (modais, sidebar, formulários)
+- Dados temporários de sessão
+
+### Estado do Servidor (React Query)
+- Dados vindos de APIs
+- Cache de informações
+- Sincronização em background
+
+## Exemplo Prático: Sistema de Blog
+
+Vamos criar um exemplo prático de como usar ambas as ferramentas juntas:
+
+### 1. Store Zustand para Estado da UI
+
+```typescript
+interface BlogUIStore {
+  sidebar: { isOpen: boolean };
+  selectedPostId: string | null;
+  toggleSidebar: () => void;
+  selectPost: (id: string | null) => void;
+}
+
+const useBlogUIStore = create<BlogUIStore>((set) => ({
+  sidebar: { isOpen: false },
+  selectedPostId: null,
+  toggleSidebar: () => set((state) => ({ 
+    sidebar: { isOpen: !state.sidebar.isOpen } 
+  })),
+  selectPost: (id) => set({ selectedPostId: id }),
+}));
+```
+
+### 2. React Query para Dados do Servidor
+
+```typescript
+import { useQuery } from '@tanstack/react-query';
+
+export const usePosts = () => {
+  return useQuery({
+    queryKey: ['posts'],
+    queryFn: fetchPosts,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+};
+
+export const usePost = (id: string) => {
+  return useQuery({
+    queryKey: ['post', id],
+    queryFn: () => fetchPost(id),
+    enabled: !!id,
+  });
+};
+```
+
+### 3. Componente que Integra Ambos
+
+```typescript
+function BlogDashboard() {
+  const { data: posts, isLoading } = usePosts();
+  const { selectedPostId, selectPost } = useBlogUIStore();
+  const { data: selectedPost } = usePost(selectedPostId);
+  
+  if (isLoading) return <div>Carregando posts...</div>;
+  
+  return (
+    <div className="blog-dashboard">
+      <div className="posts-list">
+        {posts?.map((post) => (
+          <div 
+            key={post.id}
+            onClick={() => selectPost(post.id)}
+            className={selectedPostId === post.id ? 'selected' : ''}
+          >
+            <h3>{post.title}</h3>
+            <p>{post.excerpt}</p>
+          </div>
+        ))}
+      </div>
+      
+      {selectedPost && (
+        <div className="post-detail">
+          <h2>{selectedPost.title}</h2>
+          <p>{selectedPost.content}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Organização de Stores
+
+### Stores por Domínio
+
+Em vez de uma store gigante, divida por domínios de negócio:
+
+```typescript
+// stores/auth.ts
+export const useAuthStore = create((set) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (user) => set({ user, isAuthenticated: true }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+}));
+
+// stores/ui.ts
+export const useUIStore = create((set) => ({
+  theme: 'light',
+  toggleTheme: () => set((state) => ({ 
+    theme: state.theme === 'light' ? 'dark' : 'light' 
+  })),
+}));
+```
+
+## Otimizações de Performance
+
+### Seletores Granulares
+
+```typescript
+// ❌ Ruim: Componente re-renderiza sempre
+const { user, isAuthenticated } = useAuthStore();
+
+// ✅ Bom: Apenas quando necessário
+const user = useAuthStore((state) => state.user);
+const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+```
+
+### Middleware de Persistência
+
+```typescript
+import { persist } from 'zustand/middleware';
+
+const usePersistedStore = create(
+  persist(
+    (set) => ({
+      preferences: { theme: 'light', language: 'pt-BR' },
+      updatePreference: (key, value) => 
+        set((state) => ({
+          preferences: { ...state.preferences, [key]: value }
+        })),
+    }),
+    { name: 'user-preferences' }
+  )
+);
+```
+
+## Migração de Redux
+
+Se você tem uma aplicação Redux existente, a migração pode ser feita gradualmente:
+
+### Fase 1: Adicione Zustand para Novas Funcionalidades
+### Fase 2: Migre Stores Simples
+### Fase 3: Substitua Redux por React Query + Zustand
+
+## Estrutura Recomendada
+
+```
+src/
+├── stores/
+│   ├── auth.ts
+│   ├── ui.ts
+│   └── index.ts
+├── hooks/
+│   ├── queries/
+│   └── mutations/
+└── components/
+```
+
+## Conclusão
+
+A combinação de Zustand e React Query representa uma evolução natural no ecossistema React. Juntos, eles oferecem:
+
+- **Simplicidade** sem perda de funcionalidade
+- **Performance** otimizada com re-renders mínimos
+- **Manutenibilidade** com código limpo e organizado
+- **Escalabilidade** para aplicações de qualquer tamanho
+
+Esta arquitetura é especialmente adequada para equipes que valorizam código limpo, performance e manutenibilidade a longo prazo.
+
+<Callout type="info">
+**Dica**: Comece implementando Zustand para funcionalidades simples como tema, sidebar ou modais. Depois evolua para gerenciar estado mais complexo.
+</Callout>
+
+<Callout type="warning">
+**Importante**: O React Query foi renomeado para TanStack Query. Para projetos novos, use `@tanstack/react-query`.
+</Callout>
+
+---
+
+**Referência**: Este artigo foi inspirado no conteúdo de [Zustand Meets React Query: The Perfect Pair for State Handling](https://levelup.gitconnected.com/zustand-react-query-the-lightweight-duo-for-state-management-271c5454a956) por Chamith Madusanka, mas foi completamente reescrito e expandido com exemplos práticos e casos de uso reais.
+
+Espero que este guia prático tenha ajudado você a entender como implementar Zustand e React Query em suas aplicações React. Até a próxima! 🚀
