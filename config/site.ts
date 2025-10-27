@@ -4,7 +4,7 @@ export const siteConfig = {
   description: "Exploro o universo do desenvolvimento com artigos, tutoriais e reflexões sobre tecnologia — compartilhando aprendizados reais e dicas práticas do dia a dia.",
   author: "Fabrizio Feitosa",
   links: {
-    twitter: "https://twitter.com/fabriziofeitosa",
+    twitter: "https://x.com/fabriziofeitosa",
     github: "https://github.com/fabriziofeitosa",
     instagram: "https://instagram.com/fabriziofeitosa",
     linkedin: "https://linkedin.com/in/fabriziofeitosa",
