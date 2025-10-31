@@ -13,7 +13,7 @@ export function SiteHeader({ className }: SiteHeaderProps) {
     <header className={className}>
       <div className="content md:sticky md:top-8">
         <Image
-          src="/photo.png"
+          src="/photo.webp"
           alt="Fabrizio Feitosa"
           width={75}
           height={75}
