@@ -1,0 +1,230 @@
+---
+title: "Solução CSS: Elementos inline deslocando ao ficar bold no hover"
+description: "Aprenda como resolver o problema de elementos inline que se deslocam quando ficam em negrito no hover usando pseudo-elementos CSS"
+date: 2025-11-17 18:20:00
+published: true
+tags: ["css", "hover", "pseudo-elementos", "web-development"]
+---
+
+Você já criou um menu horizontal usando listas HTML e CSS, e quando aplicou um estado de hover com `font-weight: bold`, os links começaram a se deslocar? Este é um problema comum que acontece porque o texto em negrito ocupa mais espaço do que o texto normal, causando um deslocamento visual indesejado.
+
+Neste artigo, vamos explorar uma solução elegante usando pseudo-elementos CSS para prevenir esse deslocamento.
+
+## O problema
+
+Quando você aplica `font-weight: bold` em um elemento inline no estado `:hover`, o texto fica mais largo. Isso faz com que o elemento ocupe mais espaço, empurrando os elementos adjacentes e causando um efeito de "pulo" ou deslocamento.
+
+Exemplo do problema:
+
+```css
+.nav li a:hover { 
+    font-weight: bold; 
+}
+```
+
+Quando você passa o mouse sobre o link, ele fica bold e se desloca, criando uma experiência de usuário ruim.
+
+## A solução
+
+A solução é pré-definir a largura do elemento usando um pseudo-elemento invisível que tenha o mesmo conteúdo e estilo do estado hover. Isso garante que o elemento sempre reserve o espaço necessário, mesmo quando não está em hover.
+
+### Como funciona
+
+O pseudo-elemento `::before` é criado com:
+- O mesmo conteúdo do link (usando o atributo `title`)
+- O estilo bold que será aplicado no hover
+- `visibility: hidden` para escondê-lo visualmente
+- `height: 0` e `overflow: hidden` para não ocupar espaço vertical
+
+Dessa forma, o elemento já reserva o espaço necessário para o texto em negrito, evitando qualquer deslocamento.
+
+## Implementação
+
+### HTML
+
+Primeiro, certifique-se de que seus links tenham o atributo `title` com o mesmo texto do conteúdo:
+
+```html
+<ul>
+    <li><a href="#" title="height">height</a></li>
+    <li><a href="#" title="icon">icon</a></li>
+    <li><a href="#" title="left">left</a></li>
+    <li><a href="#" title="letter-spacing">letter-spacing</a></li>
+    <li><a href="#" title="line-height">line-height</a></li>
+</ul>
+```
+
+> **Nota:** O atributo `title` é usado como fonte de conteúdo para o pseudo-elemento. Se preferir, você pode usar um atributo `data-text` personalizado e ajustar o CSS para `content: attr(data-text)`.
+
+### CSS
+
+Aqui está a solução completa:
+
+```css
+li {
+    display: inline-block;
+    font-size: 0;
+}
+
+li a {
+    display: inline-block;
+    text-align: center;
+    font: normal 16px Arial;
+    text-transform: uppercase;
+}
+
+a:hover {
+    font-weight: bold;
+}
+
+/* SOLUÇÃO */
+/* O pseudo-elemento tem o mesmo conteúdo e estilo do hover, então pré-define a largura do elemento.
+   visibility: hidden esconde o pseudo-elemento da visualização. */
+a::before {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+```
+
+### Explicação detalhada
+
+1. **`li { display: inline-block; font-size: 0; }`**
+   - `display: inline-block` permite que os itens da lista fiquem lado a lado
+   - `font-size: 0` remove o espaço entre os elementos inline-block
+
+2. **`li a { display: inline-block; ... }`**
+   - Define o link como `inline-block` para permitir controle de largura e altura
+   - Estiliza o link com fonte normal
+
+3. **`a:hover { font-weight: bold; }`**
+   - Aplica o estilo bold quando o mouse passa sobre o link
+
+4. **`a::before { ... }`** (A solução)
+   - `display: block` faz o pseudo-elemento ocupar toda a largura
+   - `content: attr(title)` usa o atributo `title` como conteúdo
+   - `font-weight: bold` aplica o mesmo peso da fonte do hover
+   - `height: 0` e `overflow: hidden` impedem que o elemento ocupe espaço vertical
+   - `visibility: hidden` esconde o elemento, mas ele ainda reserva espaço horizontal
+
+## Alternativas
+
+### Usando atributo data personalizado
+
+Se você preferir não usar o atributo `title` (que pode interferir com tooltips nativos), pode usar um atributo `data-text`:
+
+```html
+<li><a href="#" data-text="height">height</a></li>
+```
+
+```css
+a::before {
+    content: attr(data-text);
+    /* ... resto do código ... */
+}
+```
+
+### Usando text-shadow (solução alternativa)
+
+Uma alternativa mais simples, mas menos precisa, é usar `text-shadow` para simular o bold sem realmente mudar o `font-weight`:
+
+```css
+a:hover {
+    text-shadow: 0 0 0.01px black;
+}
+```
+
+Esta solução funciona, mas o resultado visual pode não ser idêntico ao `font-weight: bold` real.
+
+## Exemplo completo
+
+Aqui está um exemplo completo e funcional:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu sem deslocamento</title>
+    <style>
+        .nav {
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav li {
+            display: inline-block;
+            font-size: 0;
+            list-style: none;
+            border-left: #ffffff 1px solid;
+        }
+
+        .nav li.first {
+            border: none;
+        }
+
+        .nav li a {
+            display: inline-block;
+            text-align: center;
+            font: normal 16px Arial;
+            text-decoration: none;
+            color: #000;
+            margin-left: 8px;
+            margin-right: 5px;
+        }
+
+        .nav li a:hover {
+            font-weight: bold;
+        }
+
+        /* Solução */
+        .nav li a::before {
+            display: block;
+            content: attr(title);
+            font-weight: bold;
+            height: 0;
+            overflow: hidden;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <ul class="nav">
+        <li class="first"><a href="#" title="Home">Home</a></li>
+        <li><a href="#" title="Sobre">Sobre</a></li>
+        <li><a href="#" title="Serviços">Serviços</a></li>
+        <li><a href="#" title="Contato">Contato</a></li>
+    </ul>
+</body>
+</html>
+```
+
+## Compatibilidade
+
+Esta solução funciona em todos os navegadores modernos que suportam pseudo-elementos `::before`:
+- Chrome/Edge (todas as versões modernas)
+- Firefox (todas as versões modernas)
+- Safari (todas as versões modernas)
+- Opera (todas as versões modernas)
+
+> **Nota:** Para compatibilidade com versões muito antigas do Internet Explorer (IE8), você pode usar `:before` (com um único dois-pontos) em vez de `::before`, mas essas versões do IE já não são mais suportadas.
+
+## Conclusão
+
+Esta solução usando pseudo-elementos CSS é elegante, performática e não requer JavaScript. Ela resolve o problema de deslocamento de elementos inline quando ficam bold no hover, proporcionando uma experiência de usuário muito melhor.
+
+Lembre-se de:
+- Sempre incluir o atributo `title` (ou `data-text`) nos seus links
+- Testar em diferentes navegadores para garantir compatibilidade
+- Considerar usar esta técnica em menus, botões e outros elementos interativos
+
+---
+
+**Fonte:** Esta solução foi adaptada da resposta do usuário [350D no Stack Overflow](https://stackoverflow.com/questions/556153/inline-elements-shifting-when-made-bold-on-hover), modificada pela comunidade. Licença: CC BY-SA 4.0.
+
+Espero ter ajudado! Até breve! 🚀
+
