@@ -5,6 +5,7 @@ import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
+import { Suspense } from "react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,13 +16,14 @@ export const metadata: Metadata = {
 const POSTS_PER_PAGE = 4;
 
 interface BlogPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const currentPage = Number(searchParams?.page) || 1;
+  const resolvedSearchParams = await searchParams;
+  const currentPage = Number(resolvedSearchParams?.page) || 1;
   const sortedPosts = sortPosts(posts.filter((post) => post.published));
   const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
 
@@ -65,7 +67,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           Ops! Parece que não há postagens publicadas.
         </p>
       )}
-      <QueryPagination totalPages={totalPages} className="mt-5" />
+      <Suspense fallback={null}>
+        <QueryPagination totalPages={totalPages} className="mt-5" />
+      </Suspense>
       <Card className="h-fit mt-8">
         <CardHeader>
           <CardTitle>Tags</CardTitle>

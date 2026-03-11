@@ -6,16 +6,21 @@ import { getAllTags, getPostsByTagSlug, sortTagsByCount } from "@/lib/utils";
 import { slug } from "github-slugger";
 import { Metadata } from "next";
 
+interface TagPageParams {
+  tag: string;
+}
+
 interface TagPageProps {
-  params: {
-    tag: string;
-  };
+  params: Promise<TagPageParams>;
 }
 
 export async function generateMetadata({
   params,
-}: TagPageProps): Promise<Metadata> {
-  const { tag } = params;
+}: {
+  params: Promise<TagPageParams>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const tag = resolvedParams?.tag ?? "";
   return {
     title: `Postagens relacionados a "${tag
       .split("-")
@@ -30,8 +35,9 @@ export const generateStaticParams = () => {
   return paths;
 };
 
-export default function TagPage({ params }: TagPageProps) {
-  const { tag } = params;
+export default async function TagPage({ params }: TagPageProps) {
+  const resolvedParams = await params;
+  const tag = resolvedParams?.tag ?? "";
   const title = tag.split("-").join(" ");
 
   const displayPosts = getPostsByTagSlug(posts, tag);

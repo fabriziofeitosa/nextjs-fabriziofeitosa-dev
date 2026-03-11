@@ -16,8 +16,15 @@ interface PostPageProps {
   };
 }
 
-async function getPostFromParams(params: PostPageProps["params"]) {
-  const slug = params?.slug?.join("/");
+async function getPostFromParams(
+  params: PostPageProps["params"] | Promise<PostPageProps["params"]>
+) {
+  const resolvedParams =
+    typeof (params as any)?.then === "function"
+      ? await (params as Promise<PostPageProps["params"]>)
+      : (params as PostPageProps["params"]);
+
+  const slug = resolvedParams?.slug?.join("/");
   const post = posts.find((post) => post.slugAsParams === slug);
 
   return post;
