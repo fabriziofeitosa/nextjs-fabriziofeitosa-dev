@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
 export function MainNav() {
@@ -22,7 +22,7 @@ export function MainNav() {
           href={href}
           className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
-            pathname === href ? "text-foreground" : "text-foreground/60"
+            pathname === href ? "text-foreground" : "text-foreground/60",
           )}
         >
           {label}

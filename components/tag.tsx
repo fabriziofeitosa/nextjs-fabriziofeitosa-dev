@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { slug } from "github-slugger";
+import { slugifyTag } from "@/lib/slug";
 import { badgeVariants } from "./ui/badge";
 
 interface TagProps {
@@ -14,7 +14,7 @@ export function Tag({ tag, current, count }: TagProps) {
         variant: current ? "default" : "secondary",
         className: "no-underline rounded-md",
       })}
-      href={`/tags/${slug(tag)}`}
+      href={`/tags/${slugifyTag(tag)}`}
     >
       {tag} {count ? `(${count})` : null}
     </Link>

@@ -1,10 +1,10 @@
-import { posts } from "#site/content";
+import type { Metadata } from "next";
 import { PostItem } from "@/components/post-item";
 import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllTags, getPostsByTagSlug, sortTagsByCount } from "@/lib/utils";
-import { slug } from "github-slugger";
-import { Metadata } from "next";
+import { getAllTags, getPostsByTag, getTagCounts } from "@/lib/blog";
+import { slugifyTag } from "@/lib/slug";
+import { sortTagsByCount } from "@/lib/utils";
 
 interface TagPageParams {
   tag: string;
@@ -30,8 +30,8 @@ export async function generateMetadata({
 }
 
 export const generateStaticParams = () => {
-  const tags = getAllTags(posts);
-  const paths = Object.keys(tags).map((tag) => ({ tag: slug(tag) }));
+  const tags = getAllTags();
+  const paths = tags.map((tag) => ({ tag: slugifyTag(tag) }));
   return paths;
 };
 
@@ -40,8 +40,8 @@ export default async function TagPage({ params }: TagPageProps) {
   const tag = resolvedParams?.tag ?? "";
   const title = tag.split("-").join(" ");
 
-  const displayPosts = getPostsByTagSlug(posts, tag);
-  const tags = getAllTags(posts);
+  const displayPosts = getPostsByTag(tag);
+  const tags = getTagCounts();
   const sortedTags = sortTagsByCount(tags);
 
   return (
@@ -83,7 +83,12 @@ export default async function TagPage({ params }: TagPageProps) {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {sortedTags?.map((t) => (
-              <Tag tag={t} key={t} count={tags[t]} current={slug(t) === tag} />
+              <Tag
+                tag={t}
+                key={t}
+                count={tags[t]}
+                current={slugifyTag(t) === tag}
+              />
             ))}
           </CardContent>
         </Card>

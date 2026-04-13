@@ -1,12 +1,12 @@
-import { posts } from "#site/content";
+import { TriangleAlert } from "lucide-react";
+import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PostItem } from "@/components/post-item";
 import { QueryPagination } from "@/components/query-pagination";
 import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
-import { TriangleAlert } from "lucide-react";
-import { Suspense } from "react";
-import { Metadata } from "next";
+import { getAllPosts, getTagCounts } from "@/lib/blog";
+import { sortTagsByCount } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Blog - FabrizioFeitosa.Dev",
@@ -24,15 +24,15 @@ interface BlogPageProps {
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const resolvedSearchParams = await searchParams;
   const currentPage = Number(resolvedSearchParams?.page) || 1;
-  const sortedPosts = sortPosts(posts.filter((post) => post.published));
+  const sortedPosts = getAllPosts();
   const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
 
   const displayPosts = sortedPosts.slice(
     POSTS_PER_PAGE * (currentPage - 1),
-    POSTS_PER_PAGE * currentPage
+    POSTS_PER_PAGE * currentPage,
   );
 
-  const tags = getAllTags(posts);
+  const tags = getTagCounts();
   const sortedTags = sortTagsByCount(tags);
 
   return (

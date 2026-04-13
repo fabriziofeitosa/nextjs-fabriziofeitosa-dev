@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 interface SiteFooterProps {
   className: string;
@@ -10,7 +9,7 @@ export function SiteFooter({ className }: SiteFooterProps) {
     <footer
       className={cn(
         className,
-        "flex justify-between py-7 text-xs text-muted-foreground"
+        "flex justify-between py-7 text-xs text-muted-foreground",
       )}
     >
       <div>
@@ -23,15 +22,7 @@ export function SiteFooter({ className }: SiteFooterProps) {
         >
           NextJS
         </a>{" "}
-        +{" "}
-        <a
-          className="hover:underline"
-          href="https://velite.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Velite
-        </a>
+        + MDX
       </div>
       <div>{new Date().getFullYear()}</div>
     </footer>

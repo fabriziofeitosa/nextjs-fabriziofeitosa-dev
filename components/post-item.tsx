@@ -1,8 +1,8 @@
 import { Calendar, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
 import { cn, formatDate } from "@/lib/utils";
 import { Tag } from "./tag";
+import { buttonVariants } from "./ui/button";
 
 interface PostItemProps {
   slug: string;
@@ -19,11 +19,13 @@ export function PostItem({
   date,
   tags,
 }: PostItemProps) {
+  const href = `/blog/${slug.replace(/^\/?blog\//, "")}`;
+
   return (
     <article className="flex flex-col gap-2 border-border border-b py-3">
       <div>
         <h2 className="text-2xl font-bold">
-          <Link href={slug}>{title}</Link>
+          <Link href={href}>{title}</Link>
         </h2>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -41,7 +43,7 @@ export function PostItem({
           </dd>
         </dl>
         <Link
-          href={slug}
+          href={href}
           className={cn(buttonVariants({ variant: "link" }), "py-0")}
         >
           Ler mais

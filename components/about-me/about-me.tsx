@@ -1,16 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./about-me.module.scss";
 import { cn } from "@/lib/utils";
+import styles from "./about-me.module.scss";
 
 export default function AboutMe() {
   const [open, setOpen] = useState(false);
+  const toggleOpen = () => setOpen((currentOpen) => !currentOpen);
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: The whole text region is expandable and contains flow content.
     <div
       className={cn(open ? styles.open : styles.closed, styles.aboutMe)}
-      onClick={() => setOpen(!open)}
+      onClick={toggleOpen}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggleOpen();
+        }
+      }}
+      role="button"
+      tabIndex={0}
     >
       <h3 className="font-black text-3xl mb-4">Deixa eu me apresentar</h3>
       <div className="space-y-3">

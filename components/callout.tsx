@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
 
 interface CalloutProps {
   children?: ReactNode;
@@ -18,7 +18,7 @@ export function Callout({
         {
           "border-red-900 bg-red-50 dark:prose": type === "danger",
           "border-yellow-900 bg-yellow-50 dark:prose": type === "warning",
-        }
+        },
       )}
       {...props}
     >

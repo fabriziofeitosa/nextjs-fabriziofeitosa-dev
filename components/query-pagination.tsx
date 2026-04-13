@@ -6,8 +6,8 @@ import {
   PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationPrevious,
   PaginationNext,
+  PaginationPrevious,
 } from "./ui/pagination";
 
 interface QueryPaginationProps {
@@ -42,21 +42,21 @@ export function QueryPagination({
           </PaginationItem>
         ) : null}
 
-        {Array(totalPages)
-          .fill("")
-          .map((_, index) => (
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+          (pageNumber) => (
             <PaginationItem
               className="hidden sm:inline-block"
-              key={`page-button-${index}`}
+              key={`page-button-${pageNumber}`}
             >
               <PaginationLink
-                isActive={currentPage === index + 1}
-                href={createPageURL(index + 1)}
+                isActive={currentPage === pageNumber}
+                href={createPageURL(pageNumber)}
               >
-                {index + 1}
+                {pageNumber}
               </PaginationLink>
             </PaginationItem>
-          ))}
+          ),
+        )}
 
         {nextPage <= totalPages ? (
           <PaginationItem>

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import "./globals.scss";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -35,12 +35,12 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       className="scroll-pt-[3.5rem]"
-    // suppressHydrationWarning={true}
+      suppressHydrationWarning={true}
     >
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <Providers>

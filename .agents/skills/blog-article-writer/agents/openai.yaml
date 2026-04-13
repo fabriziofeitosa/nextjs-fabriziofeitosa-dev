@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Article Writer"
+  short_description: "Draft local MDX blog articles"
+  default_prompt: "Use $blog-article-writer to draft a new MDX article for this Next.js blog."

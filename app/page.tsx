@@ -1,9 +1,9 @@
+import Link from "next/link";
+import { Typewriter } from "nextjs-simple-typewriter";
 import AboutMe from "@/components/about-me/about-me";
 import LatestPosts from "@/components/latest-posts";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { Typewriter } from "nextjs-simple-typewriter";
 
 export default function Home() {
   return (

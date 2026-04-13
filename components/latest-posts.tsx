@@ -1,20 +1,15 @@
-import { posts } from "#site/content";
-import { PostItem } from "@/components/post-item";
-import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
+import { PostItem } from "@/components/post-item";
+import { getAllPosts } from "@/lib/blog";
 
 interface LatestPostsProps {
   qtdPosts?: number;
 }
 
 export default async function LatestPosts({ qtdPosts = 4 }: LatestPostsProps) {
-  // Somentes posts publicados
-  const sortedPosts = sortPosts(posts.filter((post) => post.published));
+  const sortedPosts = getAllPosts();
   // Limitando postagens por página
   const displayPosts = sortedPosts.slice(0, qtdPosts);
-
-  const tags = getAllTags(posts);
-  const sortedTags = sortTagsByCount(tags);
 
   return (
     <section>

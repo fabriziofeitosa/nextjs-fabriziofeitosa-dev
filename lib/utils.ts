@@ -1,7 +1,7 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { Post } from "#site/content"
-import { slug } from "github-slugger";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { Post } from "@/lib/blog";
+import { slugifyTag } from "@/lib/slug";
 
 /**
  * Junta classes de forma segura.
@@ -9,7 +9,7 @@ import { slug } from "github-slugger";
  * @returns As classes juntadas.
  */
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -22,7 +22,7 @@ export function formatDate(input: string | number): string {
     day: "numeric",
     month: "long",
     year: "numeric",
-  })
+  });
 }
 
 /**
@@ -44,15 +44,15 @@ export function sortPosts(posts: Array<Post>) {
  * @returns Tags dos posts.
  */
 export function getAllTags(posts: Array<Post>) {
-  const tags: Record<string, number> = {}
-  const postsPublished = posts.filter(post => post.published)
-  postsPublished.forEach(post => {
-    post.tags?.forEach(tag => {
+  const tags: Record<string, number> = {};
+  const postsPublished = posts.filter((post) => post.published);
+  postsPublished.forEach((post) => {
+    post.tags?.forEach((tag) => {
       // Para evitar maiuscula e minuscula, convertendo para minuscula.
       tag = tag.toLowerCase();
       tags[tag] = (tags[tag] ?? 0) + 1;
-    })
-  })
+    });
+  });
 
   return tags;
 }
@@ -63,7 +63,7 @@ export function getAllTags(posts: Array<Post>) {
  * @returns Tags ordenadas.
  */
 export function sortTagsByCount(tags: Record<string, number>) {
-  return Object.keys(tags).sort((a, b) => tags[b] - tags[a])
+  return Object.keys(tags).sort((a, b) => tags[b] - tags[a]);
 }
 
 /**
@@ -73,11 +73,11 @@ export function sortTagsByCount(tags: Record<string, number>) {
  * @returns Posts filtrados.
  */
 export function getPostsByTagSlug(posts: Array<Post>, tag: string) {
-  return posts.filter(post => {
+  return posts.filter((post) => {
     // Verifica se o post está publicado e se possui tags.
-    if (!post.published) return false
-    if (!post.tags) return false
-    const slugifiedTags = post.tags.map(tag => slug(tag))
-    return slugifiedTags.includes(tag)
-  })
+    if (!post.published) return false;
+    if (!post.tags) return false;
+    const slugifiedTags = post.tags.map((tag) => slugifyTag(tag));
+    return slugifiedTags.includes(tag);
+  });
 }

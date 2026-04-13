@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Icons } from "./icons";
-import { siteConfig } from "@/config/site";
-import { MainNav } from "./main-nav";
 import Link from "next/link";
+import { siteConfig } from "@/config/site";
+import { Icons } from "./icons";
+import { MainNav } from "./main-nav";
 
 interface SiteHeaderProps {
   className: string;

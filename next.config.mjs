@@ -1,14 +1,20 @@
-const isDev = process.argv.includes('dev')
-const isBuild = process.argv.includes('build')
+import createMDX from "@next/mdx";
+import rehypePrettyCode from "rehype-pretty-code";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
 
-if (!process.env.VELITE_STARTED && (isDev || isBuild)) {
-  process.env.VELITE_STARTED = '1'
-  const { build } = await import('velite')
-  await build({ watch: isDev, clean: !isDev })
-}
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [remarkGfm, remarkFrontmatter],
+    rehypePlugins: [[rehypePrettyCode, { theme: "github-dark" }]],
+  },
+});
 
 /** @type {import('next').NextConfig} */
-export default {
+const nextConfig = {
   // outras opções de Next aqui...
+  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   turbopack: {},
-}
+};
+
+export default withMDX(nextConfig);
