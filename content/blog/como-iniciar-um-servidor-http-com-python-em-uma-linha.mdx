@@ -1,0 +1,81 @@
+---
+title: "Como iniciar um servidor HTTP com Python em uma linha"
+description: "Suba um servidor HTTP local com Python em segundos e veja exemplos para trocar porta, diretório e acesso local."
+date: 2026-04-24 10:00:00
+published: true
+tags: ["python", "dicas", "desenvolvimento"]
+---
+
+Se você só precisa servir arquivos estáticos rapidamente, não faz sentido configurar Apache ou Nginx. O próprio Python já resolve isso com um único comando.
+
+## Comando básico
+
+Entre na pasta que você quer servir e execute:
+
+```bash
+python3 -m http.server
+```
+
+Depois disso, abra no navegador:
+
+```text
+http://localhost:8000
+```
+
+O Python vai listar os arquivos da pasta atual e também mostrar as requisições no terminal.
+
+## Trocando a porta
+
+Se a porta `8000` já estiver em uso, informe outra:
+
+```bash
+python3 -m http.server 8080
+```
+
+Agora o acesso será por:
+
+```text
+http://localhost:8080
+```
+
+## Servindo outra pasta
+
+Você não precisa estar dentro da pasta para compartilhá-la. Pode apontar o diretório com `-d`:
+
+```bash
+python3 -m http.server -d ~/projetos/site-estatico
+```
+
+Isso é útil quando você quer testar arquivos de outra pasta sem trocar o diretório atual do terminal.
+
+## Limitando o acesso à sua máquina
+
+Se quiser deixar o servidor acessível apenas localmente, defina o bind no `127.0.0.1`:
+
+```bash
+python3 -m http.server -b 127.0.0.1 8000
+```
+
+Nesse caso, outras máquinas da rede não conseguirão acessar.
+
+## Quando isso ajuda
+
+- Testar HTML, CSS e JavaScript rapidamente
+- Compartilhar arquivos na rede local
+- Servir arquivos estáticos durante desenvolvimento
+- Simular um ambiente simples com HTTP
+
+## Resumo
+
+Para um servidor rápido e sem instalação extra, esse comando costuma ser suficiente:
+
+```bash
+python3 -m http.server
+```
+
+Se precisar, você ainda pode trocar a porta, escolher outra pasta e limitar o acesso local com poucos parâmetros.
+
+<small>
+  Postagem baseada em:
+  https://soloweb.com.br/blog/2023/05/30/iniciar-servidor-http-com-python-em-uma-linha/
+</small>
