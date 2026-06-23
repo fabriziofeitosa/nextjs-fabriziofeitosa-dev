@@ -71,10 +71,19 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "name-shimmer": {
+          from: { backgroundPosition: "100% 0" },
+          to: { backgroundPosition: "0 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "name-shimmer": "name-shimmer 2s linear infinite",
+      },
+      backgroundImage: {
+        "name-shimmer":
+          "linear-gradient(110deg, hsl(var(--foreground)) 0%, hsl(var(--foreground)) 35%, hsl(var(--primary)) 45%, hsl(var(--muted-foreground)) 55%, hsl(var(--foreground)) 65%, hsl(var(--foreground)) 100%)",
       },
     },
   },

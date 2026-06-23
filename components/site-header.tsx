@@ -19,7 +19,9 @@ export function SiteHeader({ className }: SiteHeaderProps) {
           height={75}
           className="rounded-full"
         />
-        <h1 className="my-3 text-2xl font-mono">{siteConfig.author}</h1>
+        <h1 className="my-3 inline-block bg-name-shimmer bg-[length:300%_100%] bg-clip-text font-mono text-2xl text-transparent animate-name-shimmer motion-reduce:animate-none">
+          {siteConfig.author}
+        </h1>
         <p className="mt-3 mb-0 text-muted-foreground">
           {siteConfig.description}
         </p>
