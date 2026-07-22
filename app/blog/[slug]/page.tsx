@@ -1,8 +1,10 @@
+import { Calendar, Clock } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ComponentPropsWithoutRef } from "react";
+import { Tag } from "@/components/tag";
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import {
@@ -11,7 +13,7 @@ import {
   getPostSourceType,
   type Post,
 } from "@/lib/blog";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 
 import "@/styles/mdx.css";
 
@@ -146,8 +148,34 @@ export default async function PostPage({ params }: PostPageProps) {
       {post.description ? (
         <p className="text-xl mt-0 text-muted-foreground">{post.description}</p>
       ) : null}
+      <dl className="not-prose mt-4 flex flex-wrap gap-x-4 gap-y-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-1.5">
+          <dt className="sr-only">Publicado em</dt>
+          <dd className="flex items-center gap-1.5">
+            <Calendar className="h-4 w-4" />
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+          </dd>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <dt className="sr-only">Tempo de leitura</dt>
+          <dd className="flex items-center gap-1.5">
+            <Clock className="h-4 w-4" />
+            {post.readingTimeMinutes} min de leitura
+          </dd>
+        </div>
+      </dl>
       <hr className="my-4" />
       <PostContent components={getMdxComponents(post)} />
+      {post.tags.length > 0 ? (
+        <footer className="not-prose mt-10 border-border border-t pt-6">
+          <h2 className="mb-3 font-semibold text-base">Tags</h2>
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <Tag tag={tag} key={tag} />
+            ))}
+          </div>
+        </footer>
+      ) : null}
     </article>
   );
 }

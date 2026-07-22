@@ -3,6 +3,9 @@ import { twMerge } from "tailwind-merge";
 import type { Post } from "@/lib/blog";
 import { slugifyTag } from "@/lib/slug";
 
+const BLOG_TIME_ZONE = "America/Fortaleza";
+const BLOG_TIME_ZONE_OFFSET = "-03:00";
+
 /**
  * Junta classes de forma segura.
  * @param inputs Classes a serem juntadas.
@@ -18,11 +21,28 @@ export function cn(...inputs: ClassValue[]) {
  * @returns A data formatada.
  */
 export function formatDate(input: string | number): string {
-  return new Date(input).toLocaleDateString("pt-BR", {
+  return parseBlogDate(input).toLocaleDateString("pt-BR", {
     day: "numeric",
     month: "long",
+    timeZone: BLOG_TIME_ZONE,
     year: "numeric",
   });
+}
+
+function parseBlogDate(input: string | number): Date {
+  if (typeof input === "number") {
+    return new Date(input);
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+    return new Date(`${input}T00:00:00${BLOG_TIME_ZONE_OFFSET}`);
+  }
+
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(input)) {
+    return new Date(`${input.replace(" ", "T")}${BLOG_TIME_ZONE_OFFSET}`);
+  }
+
+  return new Date(input);
 }
 
 /**

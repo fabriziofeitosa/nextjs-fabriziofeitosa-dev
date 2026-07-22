@@ -4,6 +4,8 @@ import matter from "gray-matter";
 import { slugifyTag } from "@/lib/slug";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const BLOG_TIME_ZONE_OFFSET = "-03:00";
+const WORDS_PER_MINUTE = 200;
 
 export type Post = {
   slug: string;
@@ -13,6 +15,7 @@ export type Post = {
   published: boolean;
   tags: string[];
   content: string;
+  readingTimeMinutes: number;
 };
 
 type PostSourceType = "file" | "directory";
@@ -144,7 +147,22 @@ function readPostSource(source: PostSource): Post {
       typeof frontmatter.published === "boolean" ? frontmatter.published : true,
     tags: readTags(frontmatter.tags),
     content,
+    readingTimeMinutes: calculateReadingTime(content),
   };
+}
+
+function calculateReadingTime(content: string): number {
+  const text = content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)]\([^)]*\)/g, "$1")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/[#*_~>|[\]()-]/g, " ");
+
+  const wordCount = text.match(/\S+/g)?.length ?? 0;
+
+  return Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
 }
 
 function readString(value: unknown, fallback: string): string {
@@ -153,7 +171,7 @@ function readString(value: unknown, fallback: string): string {
 
 function readDate(value: unknown): string {
   if (value instanceof Date) {
-    return value.toISOString();
+    return formatFrontmatterDate(value);
   }
 
   if (typeof value === "string") {
@@ -161,6 +179,21 @@ function readDate(value: unknown): string {
   }
 
   return "";
+}
+
+function formatFrontmatterDate(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = padDatePart(date.getUTCMonth() + 1);
+  const day = padDatePart(date.getUTCDate());
+  const hours = padDatePart(date.getUTCHours());
+  const minutes = padDatePart(date.getUTCMinutes());
+  const seconds = padDatePart(date.getUTCSeconds());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${BLOG_TIME_ZONE_OFFSET}`;
+}
+
+function padDatePart(value: number): string {
+  return String(value).padStart(2, "0");
 }
 
 function readTags(value: unknown): string[] {

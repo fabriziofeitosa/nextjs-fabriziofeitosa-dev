@@ -1,0 +1,115 @@
+---
+title: "PHP não reflete alterações sem reiniciar o servidor"
+description: "Como corrigir o PHP quando alterações nos arquivos só aparecem depois de reiniciar o servidor local."
+date: 2026-07-22
+published: true
+tags: ["php", "opcache", "cachyos", "windows", "dicas"]
+---
+
+Ao rodar um projeto local com o servidor embutido do PHP, eu alterava um arquivo, atualizava a página no navegador e nada mudava. A alteração só aparecia depois de parar e iniciar o servidor novamente.
+
+No meu caso isso aconteceu no **CachyOS**, mas a causa estava na configuração do PHP. Por isso, a mesma ideia também vale no Windows: o importante é encontrar qual arquivo `php.ini` o PHP está usando e ajustar as diretivas do OPcache.
+
+## O sintoma
+
+O servidor estava rodando normalmente:
+
+```bash
+php -S localhost:3000
+```
+
+Mas qualquer mudança em arquivos PHP não era refletida imediatamente no navegador. Para ver a alteração, eu precisava reiniciar o processo do servidor.
+
+## Verificando o OPcache
+
+O primeiro passo foi conferir as configurações atuais relacionadas ao OPcache:
+
+```bash
+php -i | grep opcache
+```
+
+Os valores problemáticos eram estes:
+
+```ini
+opcache.validate_timestamps => On
+opcache.revalidate_freq => 180
+```
+
+Com `opcache.revalidate_freq` em `180`, o PHP podia demorar até 180 segundos para verificar novamente se um arquivo havia mudado.
+
+## Encontrando o php.ini correto
+
+Antes de alterar qualquer coisa, descubra qual `php.ini` está sendo carregado pelo CLI:
+
+```bash
+php --ini
+```
+
+Procure pela linha `Loaded Configuration File`. Esse é o arquivo que precisa ser editado.
+
+No Linux, ele pode estar em caminhos como:
+
+```text
+/etc/php/php.ini
+```
+
+No Windows, depende da instalação. Pode ser algo como:
+
+```text
+C:\php\php.ini
+C:\xampp\php\php.ini
+```
+
+O caminho exato deve ser sempre o que aparece no `php --ini`.
+
+## Corrigindo
+
+No `php.ini` usado pelo CLI, ajuste estas opções:
+
+```ini
+opcache.validate_timestamps=1
+opcache.revalidate_freq=0
+```
+
+O `opcache.validate_timestamps=1` mantém a verificação de alterações nos arquivos. O `opcache.revalidate_freq=0` faz essa verificação a cada requisição, que é o comportamento esperado durante o desenvolvimento local.
+
+Depois de salvar, confirme:
+
+```bash
+php -i | grep -E "validate_timestamps|revalidate_freq"
+```
+
+O resultado esperado é:
+
+```ini
+opcache.validate_timestamps => On => On
+opcache.revalidate_freq => 0 => 0
+```
+
+## Reiniciando o servidor
+
+Depois da alteração no `php.ini`, reinicie o servidor uma vez:
+
+```bash
+php -S localhost:3000
+```
+
+A partir daí, as mudanças nos arquivos PHP passam a ser refletidas imediatamente ao atualizar a página.
+
+## Resumo
+
+Se o PHP só mostra suas alterações depois de reiniciar o servidor local, confira o OPcache:
+
+```bash
+php --ini
+php -i | grep -E "validate_timestamps|revalidate_freq"
+```
+
+E, no `php.ini` carregado pelo CLI, deixe assim:
+
+```ini
+opcache.validate_timestamps=1
+opcache.revalidate_freq=0
+```
+
+Essa configuração é útil para desenvolvimento. Em produção, o ideal é revisar a configuração de OPcache pensando em performance e no processo de deploy do servidor.
