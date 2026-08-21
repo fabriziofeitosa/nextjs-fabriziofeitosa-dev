@@ -7,6 +7,8 @@ const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 const BLOG_TIME_ZONE_OFFSET = "-03:00";
 const WORDS_PER_MINUTE = 200;
 
+export const MINIMUM_POSTS_FOR_INDEXABLE_TAG = 2;
+
 export type Post = {
   slug: string;
   title: string;
@@ -46,12 +48,16 @@ export function getAllPosts(): Post[] {
 }
 
 export function getAllPostSlugs(): string[] {
-  return readPosts().map((post) => post.slug);
+  return getAllPosts().map((post) => post.slug);
 }
 
 export function getPostBySlug(slug: string): Post | null {
   const normalizedSlug = normalizeSlug(slug);
-  return readPosts().find((post) => post.slug === normalizedSlug) ?? null;
+  return (
+    readPosts().find(
+      (post) => post.slug === normalizedSlug && post.published,
+    ) ?? null
+  );
 }
 
 export function getAllTags(): string[] {
@@ -68,6 +74,14 @@ export function getTagCounts(): Record<string, number> {
 
     return acc;
   }, {});
+}
+
+export function getIndexableTags(): string[] {
+  const tagCounts = getTagCounts();
+
+  return Object.keys(tagCounts)
+    .filter((tag) => tagCounts[tag] >= MINIMUM_POSTS_FOR_INDEXABLE_TAG)
+    .sort((a, b) => a.localeCompare(b));
 }
 
 export function getPostsByTag(tag: string): Post[] {

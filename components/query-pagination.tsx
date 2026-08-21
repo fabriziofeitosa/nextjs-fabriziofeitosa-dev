@@ -15,6 +15,12 @@ interface QueryPaginationProps {
   className?: string;
 }
 
+function getCurrentPage(value: string | null): number {
+  const page = Number(value);
+
+  return Number.isSafeInteger(page) && page > 0 ? page : 1;
+}
+
 export function QueryPagination({
   totalPages,
   className,
@@ -22,7 +28,7 @@ export function QueryPagination({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentPage = getCurrentPage(searchParams.get("page"));
 
   const prevPage = currentPage - 1;
   const nextPage = currentPage + 1;

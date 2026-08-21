@@ -1,17 +1,14 @@
 import { TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PostItem } from "@/components/post-item";
 import { QueryPagination } from "@/components/query-pagination";
 import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { siteConfig } from "@/config/site";
 import { getAllPosts, getTagCounts } from "@/lib/blog";
 import { sortTagsByCount } from "@/lib/utils";
-
-export const metadata: Metadata = {
-  title: "Blog - FabrizioFeitosa.Dev",
-  description: "Aqui eu posto de tudo um pouco. Fique a vontade!",
-};
 
 const POSTS_PER_PAGE = 4;
 
@@ -21,11 +18,42 @@ interface BlogPageProps {
   }>;
 }
 
+function getCurrentPage(value: string | undefined): number {
+  const page = Number(value);
+
+  return Number.isSafeInteger(page) && page > 0 ? page : 1;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: BlogPageProps): Promise<Metadata> {
+  const { page } = await searchParams;
+  const currentPage = getCurrentPage(page);
+  const canonicalPath =
+    currentPage === 1 ? "/blog" : `/blog?page=${currentPage}`;
+
+  return {
+    title:
+      currentPage === 1
+        ? "Blog - FabrizioFeitosa.Dev"
+        : `Blog — Página ${currentPage} - FabrizioFeitosa.Dev`,
+    description: "Aqui eu posto de tudo um pouco. Fique a vontade!",
+    alternates: {
+      canonical: new URL(canonicalPath, siteConfig.url).toString(),
+    },
+    robots: currentPage > 1 ? { follow: true, index: false } : undefined,
+  };
+}
+
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const resolvedSearchParams = await searchParams;
-  const currentPage = Number(resolvedSearchParams?.page) || 1;
+  const currentPage = getCurrentPage(resolvedSearchParams?.page);
   const sortedPosts = getAllPosts();
   const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+
+  if (sortedPosts.length > 0 && currentPage > totalPages) {
+    notFound();
+  }
 
   const displayPosts = sortedPosts.slice(
     POSTS_PER_PAGE * (currentPage - 1),

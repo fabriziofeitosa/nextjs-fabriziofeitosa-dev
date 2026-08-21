@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PostItem } from "@/components/post-item";
 import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllTags, getPostsByTag, getTagCounts } from "@/lib/blog";
+import { siteConfig } from "@/config/site";
+import {
+  getAllTags,
+  getPostsByTag,
+  getTagCounts,
+  MINIMUM_POSTS_FOR_INDEXABLE_TAG,
+} from "@/lib/blog";
 import { slugifyTag } from "@/lib/slug";
 import { sortTagsByCount } from "@/lib/utils";
 
@@ -21,11 +28,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const tag = resolvedParams?.tag ?? "";
+  const normalizedTag = slugifyTag(tag);
+  const postCount = getPostsByTag(normalizedTag).length;
+  const title = normalizedTag.split("-").join(" ");
+
   return {
-    title: `Postagens relacionados a "${tag
-      .split("-")
-      .join(" ")}" - FabrizioFeitosa.Dev`,
-    description: `Postagens relacionadas a ${tag}`,
+    title: `Postagens relacionadas a "${title}" - FabrizioFeitosa.Dev`,
+    description: `Postagens relacionadas a ${title}.`,
+    alternates: {
+      canonical: new URL(`/tags/${normalizedTag}`, siteConfig.url).toString(),
+    },
+    robots:
+      postCount < MINIMUM_POSTS_FOR_INDEXABLE_TAG
+        ? { follow: true, index: false }
+        : undefined,
   };
 }
 
@@ -35,12 +51,18 @@ export const generateStaticParams = () => {
   return paths;
 };
 
+export const dynamicParams = false;
+
 export default async function TagPage({ params }: TagPageProps) {
   const resolvedParams = await params;
   const tag = resolvedParams?.tag ?? "";
-  const title = tag.split("-").join(" ");
-
   const displayPosts = getPostsByTag(tag);
+
+  if (displayPosts.length === 0) {
+    notFound();
+  }
+
+  const title = slugifyTag(tag).split("-").join(" ");
   const tags = getTagCounts();
   const sortedTags = sortTagsByCount(tags);
 

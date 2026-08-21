@@ -25,6 +25,33 @@ interface PostPageProps {
 
 type ImageProps = ComponentPropsWithoutRef<"img">;
 
+type BlogPostingJsonLd = {
+  "@context": "https://schema.org";
+  "@type": "BlogPosting";
+  author: {
+    "@type": "Person";
+    name: string;
+    sameAs: string[];
+    url: string;
+  };
+  datePublished: string;
+  description: string;
+  headline: string;
+  image: string;
+  inLanguage: "pt-BR";
+  keywords: string[];
+  mainEntityOfPage: {
+    "@id": string;
+    "@type": "WebPage";
+  };
+  publisher: {
+    "@type": "Organization";
+    name: string;
+    url: string;
+  };
+  url: string;
+};
+
 async function getPostFromParams(params: PostPageProps["params"]) {
   const { slug } = await params;
   return getPostBySlug(slug);
@@ -72,6 +99,50 @@ function getPostImageSrc(slug: string, src: ImageProps["src"]) {
   return `/blog-assets/${slug}/${src.replace(/^\.\//, "")}`;
 }
 
+function getPostUrl(slug: string): string {
+  return new URL(`/blog/${slug}`, siteConfig.url).toString();
+}
+
+function getOgImageUrl(title: string): string {
+  const searchParams = new URLSearchParams({ title });
+
+  return new URL(
+    `/api/og?${searchParams.toString()}`,
+    siteConfig.url,
+  ).toString();
+}
+
+function getBlogPostingJsonLd(post: Post): BlogPostingJsonLd {
+  const url = getPostUrl(post.slug);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    author: {
+      "@type": "Person",
+      name: siteConfig.author,
+      sameAs: Object.values(siteConfig.links),
+      url: siteConfig.url,
+    },
+    datePublished: post.date,
+    description: post.description,
+    headline: post.title,
+    image: getOgImageUrl(post.title),
+    inLanguage: "pt-BR",
+    keywords: post.tags,
+    mainEntityOfPage: {
+      "@id": url,
+      "@type": "WebPage",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+    url,
+  };
+}
+
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
@@ -81,21 +152,25 @@ export async function generateMetadata({
     return {};
   }
 
-  const ogSearchParams = new URLSearchParams();
-  ogSearchParams.set("title", post.title);
+  const url = getPostUrl(post.slug);
+  const image = getOgImageUrl(post.title);
 
   return {
     title: post.title,
     description: post.description,
     authors: { name: siteConfig.author },
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
-      url: `/blog/${post.slug}`,
+      url,
+      publishedTime: post.date,
       images: [
         {
-          url: `/api/og?${ogSearchParams.toString()}`,
+          url: image,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -106,7 +181,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [`/api/og?${ogSearchParams.toString()}`],
+      images: [image],
     },
   };
 }
@@ -116,6 +191,8 @@ export function generateStaticParams(): Array<{ slug: string }> {
     slug,
   }));
 }
+
+export const dynamicParams = false;
 
 export default async function PostPage({ params }: PostPageProps) {
   const post = await getPostFromParams(params);
@@ -132,6 +209,16 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <article className="pb-6 prose dark:prose-invert">
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD must be emitted as JSON, and the content is escaped below.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getBlogPostingJsonLd(post)).replace(
+            /</g,
+            "\\u003c",
+          ),
+        }}
+      />
       <hr className="mt-4 md:hidden border-foreground" />
       <Link
         href="/blog"

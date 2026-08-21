@@ -14,6 +14,9 @@ const withMDX = createMDX({
 const nextConfig = {
   // outras opções de Next aqui...
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  experimental: {
+    useTypeScriptCli: false,
+  },
   turbopack: {},
 };
 
