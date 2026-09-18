@@ -75,6 +75,13 @@ npm run build
 
 `npm run build` may require network access because `next/font` fetches the Inter font.
 
+## Versioning
+
+After any real project change, bump `version` in `package.json` once for the whole change set. Follow `.agents/skills/bump-package-version`. Do not skip this step, and do not create a git commit or tag just to record the bump.
+
 ## Local Skills
 
-Use `.agents/skills/blog-article-writer` when creating, editing, or reviewing blog articles.
+Project skills live in `.agents/skills` so any coding agent can read them. Load the matching skill before doing the work:
+
+- `.agents/skills/bump-package-version` after modifying the project (required)
+- `.agents/skills/blog-article-writer` when creating, editing, or reviewing blog articles

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bump Package Version"
+  short_description: "Increment package.json after project changes"
+  default_prompt: "Use $bump-package-version to increment the version in package.json for this change set."
