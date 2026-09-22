@@ -1,6 +1,6 @@
 {
   "name": "nextjs-fabriziofeitosa-dev",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "packageManager": "npm@11.12.1",
   "scripts": {

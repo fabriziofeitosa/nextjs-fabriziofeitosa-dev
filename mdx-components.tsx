@@ -3,6 +3,7 @@ import type { MDXComponents } from "mdx/types";
 import Image from "next/image";
 import type { ComponentPropsWithoutRef } from "react";
 import { Callout } from "@/components/callout";
+import { CodeBlock } from "@/components/code-block";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ const components: MDXComponents = {
   IconInfo,
   Image,
   Callout,
+  pre: CodeBlock,
   a: ({ className, ...props }: AnchorProps) => (
     <a
       target="_blank"

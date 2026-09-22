@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ComponentPropsWithoutRef } from "react";
+import { CodeBlock } from "@/components/code-block";
 import { Tag } from "@/components/tag";
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
@@ -73,6 +74,7 @@ async function getPostContent(slug: string) {
 
 function getMdxComponents(post: Post): MDXComponents {
   return {
+    pre: CodeBlock,
     img: ({ src, alt = "", ...props }: ImageProps) => {
       const imageSrc = getPostImageSrc(post.slug, src);
 
