@@ -1,133 +1,116 @@
 ---
 title: "Como excluir todas as branches locais, exceto a atual?"
-description: "Seria bom fazer uma limpeza em tantas branches/ramificações baixadas no seu repositório local, certo? Vamos aprender a fazer isso."
-date: 2024-12-04 14:30:00
+description: "Aprenda a remover com segurança as branches locais que não está usando e manter apenas a branch atual."
+date: 2026-09-22
 published: true
 tags: ["git", "dicas", "organização"]
 ---
 
-Se você executar `git branch` no seu repositório local, poderá ver várias branches em que está trabalhando ou que já trabalhou. Depois de um tempo, você irá acumular muitas delas que nem usa mais, então vamos aprender a fazer uma limpeza.
+Ao executar `git branch` no repositório local, é comum encontrar branches de trabalhos já concluídos. Este comando ajuda a limpar as branches locais e preservar apenas aquela em que você está.
 
-## O comando "mágico"
+## O comando
 
-Sem enrolação, abra o Git Bash (o terminal do Git). Se sua branch principal for de nome `master` e você não quiser preservar nenhuma outra, já pode executar o seguinte comando:
+Em repositórios novos, a branch principal costuma se chamar `main`. Ainda assim, em vez de depender desse nome, o comando abaixo identifica e preserva automaticamente a branch atual:
 
 <Alert>
   <IconInfo className="h-4 w-4" />
   <AlertTitle>Atenção</AlertTitle>
   <AlertDescription>
-    Use esse comando com cuidado! Ele apaga branches locais de forma
-    irreversível. Se você tiver alterações não commitadas ou branches que não
-    foram "mergeadas", elas serão perdidas.
+    O comando remove somente branches locais. Comece com <code>-d</code>,
+    que apaga apenas branches já integradas. Use <code>-D</code> apenas se
+    tiver certeza de que também quer remover branches não integradas.
   </AlertDescription>
 </Alert>
 
 ```bash
-$ git branch | grep -v "master" | xargs git branch -D
+current_branch=$(git branch --show-current)
+
+if [ -z "$current_branch" ]; then
+  echo "Faça checkout de uma branch antes de continuar."
+  exit 1
+fi
+
+git branch --format="%(refname:short)" |
+  while IFS= read -r branch; do
+    [ "$branch" = "$current_branch" ] || git branch -d "$branch"
+  done
 ```
 
-Se sua **branch principal e/ou de trabalho** tiver outro nome, altere `master` para outro nome que você utilize.
+O comando funciona no Git Bash, no macOS e em terminais Bash/Linux. Ele não altera branches remotas, como `origin/main`.
 
-**Pronto! Isso já fará uma limpeza no seu repositório local.** Caso queira entender melhor o comando ou mais algumas dicas de uso, vamos nos aprofundar mais.
+Se você realmente precisar apagar branches que ainda não foram integradas, troque `git branch -d "$branch"` por `git branch -D "$branch"` depois de conferir o que será removido.
 
----
+### Atalho de uma linha para manter a `main`
+
+Se você está na `main` e quer manter somente ela, o atalho continua muito prático:
+
+```bash
+git branch --format="%(refname:short)" | grep -vx "main" | xargs git branch -D
+```
+
+Ele é a versão atualizada do conhecido `git branch | grep -v "main" | xargs git branch -D`: remove todas as branches locais, exceto `main`, em uma linha. Use-o apenas quando a branch que deve sobreviver for realmente a `main` e você estiver nela.
+
+O `--format` e o `grep -x` fazem a comparação pelo nome completo. Assim, uma branch como `feature/main-layout` não fica preservada por acidente. Como `-D` força a exclusão de branches não integradas, você pode trocar por `-d` para uma limpeza conservadora.
+
+### Confira antes de apagar
+
+Para listar as branches que seriam removidas, sem apagar nada, execute:
+
+```bash
+current_branch=$(git branch --show-current)
+git branch --format="%(refname:short)" |
+  while IFS= read -r branch; do
+    [ "$branch" = "$current_branch" ] || echo "$branch"
+  done
+```
+
+Por exemplo, se você estiver em `main`, a listagem poderá ser:
+
+```bash
+feature/login
+fix/menu-mobile
+```
 
 ## Entendendo o comando
 
-Comando completo:
+### `git branch --show-current`
 
-```bash
-$ git branch | grep -v "master" | xargs git branch -D
+Retorna o nome da branch atual, por exemplo, `main`. Em um estado de `HEAD` destacado (*detached HEAD*), ele não retorna nada; por isso o script interrompe a execução nesse caso, evitando uma limpeza acidental.
+
+### `git branch --format="%(refname:short)"`
+
+Lista os nomes das branches locais sem o asterisco que identifica a branch atual na saída normal de `git branch`. Isso torna a comparação precisa, inclusive para nomes como `main`, `feature/main-layout` e `maintenance`.
+
+### O loop `while`
+
+O loop lê cada branch e executa a remoção somente quando o nome é diferente de `current_branch`. Assim, ele preserva exatamente a branch atual, independentemente de ela se chamar `main` ou ter outro nome.
+
+### `git branch -d` e `git branch -D`
+
+- `git branch -d <nome>`: remove uma branch apenas quando ela já foi integrada à branch atual ou à sua upstream.
+- `git branch -D <nome>`: força a remoção, mesmo sem integração. Commits que ficarem sem referência podem ser mais difíceis de recuperar depois que o reflog expirar.
+
+## PowerShell
+
+No PowerShell, use o equivalente abaixo. Permaneça na branch que deseja manter — normalmente, `main`:
+
+```powershell
+$currentBranch = git branch --show-current
+
+if (-not $currentBranch) {
+  throw "Faça checkout de uma branch antes de continuar."
+}
+
+git branch --format="%(refname:short)" |
+  Where-Object { $_ -ne $currentBranch } |
+  ForEach-Object { git branch -d $_ }
 ```
 
-### 1. `git branch`
+Para forçar a remoção de branches não integradas no PowerShell, substitua `git branch -d $_` por `git branch -D $_` somente após revisar a lista.
 
-Esse comando lista todas as branches locais no repositório. Por exemplo:
-
-```bash
-  feature1
-  feature2
-* master
-```
-
-O asterisco (\*) indica a branch atual.
-
-### 2. `| grep -v "master"`
-
-O `|` é o operador pipe, que direciona a saída do comando anterior (`git branch`) para o próximo comando (`grep`).
-
-O comando `grep -v "master"` filtra as linhas excluindo aquelas que contêm a palavra "master".
-
-Por exemplo, se a saída de `git branch` fosse:
-
-```bash
-  feature1
-  feature2
-* master
-```
-
-Após passar por `grep -v "master"`, sobraria:
-
-```bash
-  feature1
-  feature2
-```
-
-### 3. `| xargs git branch -D`
-
-O comando `xargs` pega as linhas da entrada (filtradas pelo `grep`) e as transforma em argumentos para o comando que segue (`git branch -D`).
-
-- `git branch -D <nome_da_branch>`: Apaga a branch localmente, mesmo que ela não tenha sido integrada ou esteja desatualizada (é uma deleção forçada).
-
-Por exemplo, se a saída do `grep` foi:
-
-```bash
-  feature1
-  feature2
-```
-
-O `xargs` transforma isso no equivalente a executar:
-
-```bash
-git branch -D feature1
-git branch -D feature2
-```
-
----
-
-## Fluxo geral:
-
-1. `git branch` lista as branches locais.
-2. `grep -v "master"` remove a branch `master` da lista.
-3. `xargs git branch -D` apaga todas as branches restantes, exceto a `master`.
-
----
-
-## Extra
-
-Para manter a sua branch atual (vai que você já está utilizando ela), ela vai vir com um \* na frente do nome, então você pode ajustar o seguinte trecho no código:
-
-```bash
-grep -v ^*
-```
-
-Para manter mais de uma branch, você pode usar:
-
-```bash
-grep -v "master\|minha-outra-branch"
-```
-
-E caso você utilize **PowerShell**, não precisa do comando acima! Fique na branch que você quer manter e execute:
-
-```bash
-git branch -D $(git branch).Trim()
-```
-
----
-
-Isso é tudo! Espero ter ajudado! 😊
+Isso é tudo! 😊
 
 <small>
-  Fonte:
-  https://stackoverflow.com/questions/28572293/can-i-delete-all-the-local-branches-except-the-current-one
+  Referências:
+  <a href="https://git-scm.com/docs/git-branch">documentação oficial do git branch</a>.
 </small>
