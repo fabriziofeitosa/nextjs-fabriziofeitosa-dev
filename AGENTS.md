@@ -45,7 +45,7 @@ Rules:
 
 ## MDX Rendering
 
-MDX is configured in `next.config.mjs` with:
+MDX is configured in `next.config.ts` with:
 
 - `@next/mdx`
 - `remark-gfm`

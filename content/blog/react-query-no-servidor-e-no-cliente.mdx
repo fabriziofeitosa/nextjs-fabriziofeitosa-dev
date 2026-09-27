@@ -1,0 +1,352 @@
+---
+title: "React Query no servidor e no cliente com o Next.js App Router"
+description: "Como criar o getQueryClient do TanStack Query, pré-buscar dados num Server Component e continuar o mesmo cache no navegador."
+date: 2026-09-27
+published: true
+tags: ["nextjs", "react", "tanstack-query", "typescript", "desenvolvimento"]
+---
+
+O TanStack Query guarda o cache num `QueryClient`. No App Router do Next.js esse cliente participa da renderização duas vezes: o servidor pré-busca os dados, e o navegador continua o cache depois da hidratação. A função `getQueryClient` abaixo é o padrão do guia [Advanced Server Rendering](https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr). Ela cria um cliente novo em cada chamada no servidor e reutiliza um só no navegador.
+
+## O cliente certo em cada ambiente
+
+```typescript
+// lib/get-query-client.ts
+import {
+  defaultShouldDehydrateQuery,
+  environmentManager,
+  QueryClient,
+} from "@tanstack/react-query";
+
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Acima de zero, o dado hidratado não refaz a busca na hora
+        staleTime: 60 * 1000,
+      },
+      dehydrate: {
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === "pending",
+        shouldRedactErrors: () => {
+          // O Next.js detecta páginas dinâmicas por esses erros
+          // e já redige a mensagem com um digest próprio
+          return false;
+        },
+      },
+    },
+  });
+}
+
+let browserQueryClient: QueryClient | undefined;
+
+export function getQueryClient() {
+  if (environmentManager.isServer()) {
+    return makeQueryClient();
+  }
+
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();
+  }
+
+  return browserQueryClient;
+}
+```
+
+<ParaLeigoLer>
+Pense num restaurante. Cada mesa faz um pedido, e a cozinha anota esse pedido numa comanda nova. Se usasse a mesma folha o dia inteiro, o prato da mesa 3 se misturaria com o da mesa 7. Isso é o servidor: uma comanda nova por visita.
+
+Na mesa, o cliente fica com o mesmo prato até pedir outro. Se o garçom trocasse o prato por um vazio toda vez que passasse, o cliente teria que pedir de novo. Isso é o navegador: a mesma comanda fica aberta na aba.
+</ParaLeigoLer>
+
+Esse arquivo fica sem `"use client"`. O Server Component importa `getQueryClient` para pré-buscar, e o provider do navegador importa a mesma função para montar o `QueryClientProvider`. A documentação coloca o arquivo em `app/get-query-client.ts`. Em `lib/get-query-client.ts` o caminho fica igual para os dois lados.
+
+Guias mais antigos importam `isServer` como booleano. A documentação atual usa `environmentManager.isServer()`. Se esse símbolo não existir na versão instalada, a verificação continua sendo o booleano `isServer`.
+
+### Servidor: um cliente por chamada
+
+O processo do Node permanece vivo entre requisições. Um `QueryClient` guardado em variável de módulo no servidor mistura o cache de um usuário com o da requisição seguinte. Cada chamada no servidor devolve uma instância nova.
+
+Os dados pré-buscados atravessam a rede pelo `dehydrate`, dentro da prop `state` da `HydrationBoundary`. A instância do servidor não é a mesma instância do provider.
+
+### Navegador: um cliente para a aba
+
+No browser, a variável de módulo vive com a aba. Recriar o cliente a cada render apaga o cache. Na renderização inicial o React ainda pode descartar o trabalho se um componente suspender antes de um limite de Suspense. Um `useState(() => new QueryClient())` no provider sofre esse descarte quando o limite fica acima dele, ou quando não existe limite nenhum. O singleton do módulo sobrevive.
+
+## staleTime acima de zero
+
+O padrão da biblioteca é `staleTime: 0`. Com isso, o dado hidratado já nasce obsoleto e o navegador busca de novo assim que o componente monta. A pré-busca do servidor vira um flash.
+
+Um minuto (`60 * 1000`) é o ponto de partida da documentação. Dez minutos (`60 * 1000 * 10`) cabem quando a lista muda pouco: foco na janela e remontagem esperam esse prazo. `invalidateQueries` depois de uma mutação atualiza na hora, independente do `staleTime`.
+
+O valor fica em `makeQueryClient`, então servidor e navegador usam o mesmo prazo. Ajuste pelo dado, e mantenha um default conservador se a maior parte das telas precisa de informação recente.
+
+<ParaLeigoLer>
+O prato chega quente. Por um minuto, ninguém volta à cozinha só porque o cliente olhou para o prato de novo. Esse minuto é o `staleTime`. Se o prato for uma feijoada, que demora a mudar, dá para esperar dez minutos. Se o cliente avisar que o pedido mudou, a cozinha faz outro na hora. Esse aviso é o `invalidateQueries`.
+</ParaLeigoLer>
+
+## O que a desidratação inclui
+
+`defaultShouldDehydrateQuery` serializa as consultas que já terminaram com sucesso. O `|| query.state.status === "pending"` inclui também as que ainda estão em voo. Desde o React Query v5.40.0 isso permite streaming: a pré-busca começa cedo, a página segue o render, e o resultado chega no cliente quando a promise resolve.
+
+Quando a consulta ainda está pendente, o erro dela viaja junto com a promise. O padrão da biblioteca troca esse erro por uma mensagem genérica, `redacted`, para o detalhe interno do servidor não ir parar no HTML. No Next.js, `shouldRedactErrors` retorna `false` e o erro original segue. O framework usa alguns desses erros para perceber que a página é dinâmica, e também para `notFound()` e `redirect()`. Em produção, ele mesmo esconde a mensagem feia do visitante e deixa no lugar um digest.
+
+<ParaLeigoLer>
+Às vezes a cozinha manda um bilhete especial: "esse prato muda conforme quem sentou na mesa" ou "esse prato saiu do cardápio". O gerente precisa ler o bilhete original para decidir se a mesa é especial ou se deve mostrar a página de "não encontramos". Se o garçom trocasse todo bilhete por "deu ruim", o gerente não saberia o que fazer. No Next.js o bilhete original passa. A casa já sabe esconder do cliente o detalhe feio, como a senha do forno, e ainda assim agir em cima da mensagem certa.
+</ParaLeigoLer>
+
+Se o app persistir o cache no `localStorage` com o persist adapter, o persister precisa da regra inversa: só consultas bem-sucedidas. Uma promise pendente não deve ir para o storage.
+
+```tsx
+dehydrateOptions: { shouldDehydrateQuery: defaultShouldDehydrateQuery }
+```
+
+## Provider no layout
+
+```tsx
+// app/providers.tsx
+"use client";
+
+import { QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import { getQueryClient } from "@/lib/get-query-client";
+
+export function Providers({ children }: { children: ReactNode }) {
+  const queryClient = getQueryClient();
+
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+}
+```
+
+```tsx
+// app/layout.tsx
+import { Providers } from "./providers";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="pt-BR">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+Chame `getQueryClient()` durante o render do provider. O `QueryClientProvider` usa contexto, por isso o arquivo do provider leva `"use client"`.
+
+## A mesma definição nos dois lados
+
+A `queryKey` e a `queryFn` do prefetch precisam ser as do hook. `queryOptions` guarda as duas num objeto só, e esse objeto entra tanto em `queryClient.query` quanto em `useQuery`.
+
+```typescript
+// lib/posts.ts
+import { queryOptions } from "@tanstack/react-query";
+
+export type Post = {
+  id: number;
+  title: string;
+};
+
+async function getPosts(): Promise<Post[]> {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+
+  if (!response.ok) {
+    throw new Error("Falha ao buscar posts");
+  }
+
+  return response.json();
+}
+
+export const postsQueryOptions = queryOptions({
+  queryKey: ["posts"],
+  queryFn: getPosts,
+});
+```
+
+<ParaLeigoLer>
+A cozinha e o garçom precisam ler o mesmo nome no pedido. Se a cozinha anota "feijoada" e o garçom anota "feijoada da casa", os dois acham que são pratos diferentes e a cozinha prepara duas vezes. O `queryOptions` é essa comanda única, com o mesmo nome nos dois lados.
+</ParaLeigoLer>
+
+<Callout type="warning">
+A `queryFn` deve buscar com `fetch` ou com uma camada RPC. Server Action dentro de `queryFn` roda em série no cliente, e o React Query dispara buscas em paralelo. O efeito é query presa em `pending` ou a action que nunca executa. Server Action continua adequada dentro de `mutationFn`.
+</Callout>
+
+Na v5 atual, `queryClient.query` é o método imperativo. `fetchQuery` e `prefetchQuery` seguem disponíveis e estão marcados para sair na v6. O equivalente antigo do prefetch que absorve o erro é `prefetchQuery`. O equivalente do `await queryClient.query` é `fetchQuery`.
+
+## Pré-busca no Server Component
+
+O Server Component pré-busca e desidrata. Quem renderiza a lista é o Client Component. Se os dois desenharem o mesmo dado, uma revalidação no navegador atualiza só o cliente, e o número ou o texto que nasceu no servidor fica para trás.
+
+```tsx
+// app/posts/page.tsx
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/get-query-client";
+import { postsQueryOptions } from "@/lib/posts";
+import { Posts } from "./posts";
+
+export default async function PostsPage() {
+  const queryClient = getQueryClient();
+
+  await queryClient.query(postsQueryOptions).catch(() => {
+    // O erro fica no cache. A página renderiza e o cliente lê isError.
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Posts />
+    </HydrationBoundary>
+  );
+}
+```
+
+```tsx
+// app/posts/posts.tsx
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { postsQueryOptions } from "@/lib/posts";
+
+export function Posts() {
+  const { data, isPending, isError } = useQuery(postsQueryOptions);
+
+  if (isPending) {
+    return <p>Carregando posts...</p>;
+  }
+
+  if (isError) {
+    return <p>Não foi possível carregar os posts.</p>;
+  }
+
+  return (
+    <ul>
+      {data.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<ParaLeigoLer>
+A cozinha prepara o prato e manda a comanda. Quem descreve o prato para o cliente é o garçom. Se a cozinha também gritasse o pedido na sala, e depois só o garçom atualizasse a versão dele, o cliente ouviria duas histórias. Por isso o servidor prepara e envia. Quem mostra a lista é o componente do navegador.
+</ParaLeigoLer>
+
+Com a query já resolvida no servidor, `useQuery` lê o cache hidratado. Se o prefetch sair da página, o hook busca no navegador. `useSuspenseQuery` também lê esse cache. Sem o prefetch, ele suspende e precisa de um limite de Suspense em volta.
+
+Cada Server Component que pré-busca pode ter a própria `HydrationBoundary`. No servidor, `getQueryClient()` devolve uma instância nova a cada chamada, então o `dehydrate` serializa as queries daquele trecho.
+
+## Streaming sem esperar a promise
+
+Quando a consulta pendente entra na desidratação, a página dispara a busca e segue. A promise viaja no estado desidratado.
+
+```tsx
+// app/posts/page.tsx
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/get-query-client";
+import { postsQueryOptions } from "@/lib/posts";
+import { Posts } from "./posts";
+
+export default function PostsPage() {
+  const queryClient = getQueryClient();
+
+  void queryClient.query(postsQueryOptions).catch(() => {
+    // O erro fica no cache. O componente lê o status da query.
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Posts />
+    </HydrationBoundary>
+  );
+}
+```
+
+<ParaLeigoLer>
+A cozinha começa o bife e já manda o pão para a mesa. O cliente não fica olhando para a porta até o bife ficar pronto. Quando o bife sai, ele chega na mesma comanda. Isso é disparar a busca sem `await`: a página segue, e o dado pendente chega quando termina.
+</ParaLeigoLer>
+
+No cliente, `useSuspenseQuery(postsQueryOptions)` consome essa promise e o Next.js transmite o HTML quando ela resolve. `useQuery` também encontra a promise, mas nesse caso o componente renderiza em `pending` e o conteúdo espera o navegador.
+
+O `.catch` evita uma rejeição solta no servidor. O estado de erro continua dentro da query.
+
+## Consultas que só existem no cliente
+
+Comentários abertos depois de um clique não precisam de prefetch. O provider já entrega o singleton do navegador:
+
+```tsx
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+
+type Comment = {
+  id: number;
+  name: string;
+};
+
+async function getComments(postId: number): Promise<Comment[]> {
+  const response = await fetch(
+    `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
+  );
+
+  if (!response.ok) {
+    throw new Error("Falha ao buscar comentários");
+  }
+
+  return response.json();
+}
+
+export function Comments({ postId }: { postId: number }) {
+  const { data } = useQuery({
+    queryKey: ["posts", postId, "comments"],
+    queryFn: () => getComments(postId),
+  });
+
+  return (
+    <ul>
+      {data?.map((comment) => (
+        <li key={comment.id}>{comment.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<ParaLeigoLer>
+A sobremesa não sai junto com o almoço. Ela só vai para a cozinha quando o cliente pede. Os comentários desse exemplo são essa sobremesa: a busca começa no navegador, e a comanda da aba guarda o resultado por um tempo.
+</ParaLeigoLer>
+
+A busca começa no navegador. O `browserQueryClient` guarda o resultado até o `staleTime` passar.
+
+## Um cliente por requisição com cache()
+
+Quando várias funções do mesmo request precisam ver o mesmo `QueryClient`, `cache` do React devolve a mesma instância naquela requisição e outra na seguinte:
+
+```typescript
+import { QueryClient } from "@tanstack/react-query";
+import { cache } from "react";
+
+export const getQueryClient = cache(() => new QueryClient());
+```
+
+Cada `dehydrate` desse cliente serializa o cache inteiro, inclusive queries que outro Server Component já serializou. A instância nova por prefetch evita esse excesso. O `cache()` ajuda quando a `queryFn` não usa o `fetch` do Next.js, que já deduplica sozinho, e o mesmo trabalho seria disparado duas vezes no request.
+
+`cache()` existe no servidor. O provider do navegador continua com o `browserQueryClient` do primeiro exemplo. Os dois mecanismos resolvem problemas diferentes: um isola requisições, o outro preserva a aba.
+
+## Checklist
+
+- No servidor, `getQueryClient()` cria uma instância nova.
+- No navegador, a mesma chamada devolve `browserQueryClient`.
+- `staleTime` fica acima de zero nos dois lados.
+- Prefetch e hook importam o mesmo `queryOptions`.
+- O Server Component desidrata. O Client Component renderiza o dado.
+- `shouldRedactErrors` retorna `false` no Next.js.
+- Streaming sem `await` inclui consultas `pending` na desidratação.
+- Persistência em storage usa só `defaultShouldDehydrateQuery`.

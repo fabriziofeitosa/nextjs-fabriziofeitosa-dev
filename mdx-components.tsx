@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { ComponentPropsWithoutRef } from "react";
 import { Callout } from "@/components/callout";
 import { CodeBlock } from "@/components/code-block";
+import { ParaLeigoLer } from "@/components/para-leigo-ler";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ const components: MDXComponents = {
   IconInfo,
   Image,
   Callout,
+  ParaLeigoLer,
   pre: CodeBlock,
   a: ({ className, ...props }: AnchorProps) => (
     <a

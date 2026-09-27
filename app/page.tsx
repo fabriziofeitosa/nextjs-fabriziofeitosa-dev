@@ -16,17 +16,14 @@ export default function Home() {
         <pre className="block lg:inline">
           <Typewriter
             words={[
-              "Programação",
-              "Tecnologia",
               "Front-end",
-              "Back-end",
-              "Javascript",
+              "JavaScript",
+              "TypeScript",
               "React",
-              "Next.js",
+              "NextJS",
+              "CSS",
               "PHP",
-              "WordPress",
-              "Elementor",
-              "Html/CSS",
+              "Git",
               "Windows",
               "Linux",
             ]}

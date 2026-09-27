@@ -43,6 +43,7 @@ Available MDX components include:
 
 - `<Callout type="warning">...</Callout>`
 - `<Callout type="danger">...</Callout>`
+- `<ParaLeigoLer>...</ParaLeigoLer>` for a short everyday analogy. The title "Para leigo ler" is part of the component.
 - `<Alert>`, `<AlertTitle>`, `<AlertDescription>`, and `<IconInfo />`
 - Markdown images, links, tables, and GFM syntax.
 
